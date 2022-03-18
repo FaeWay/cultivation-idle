@@ -1,7 +1,6 @@
 import {Injectable, OnInit} from '@angular/core';
 import {IBaseItem} from "../models/items/baseItem.model";
 import Decimal from "break_eternity.js";
-import {WeakSpiritHerb} from "../models/items/herbs/weakspiritherb";
 import {Element} from "../models/items/elements";
 import {UtilityFunctions} from "../Utils/utlity-functions";
 import {AlertController, ToastController} from "@ionic/angular";
@@ -17,9 +16,14 @@ const LOCAL_STORAGE_NAME = 'cultivation-idle-savegame';
   providedIn: 'root'
 })
 export class GamedataService implements OnInit {
+
+  //region Vars
   //Game Data Maps
+  /// BaseName
   private resourceAmounts: Map<string, Map<Element, Decimal>>;
-  private knownResources: Map<string, IBaseItem>;
+  /// Display-Name
+  private knownResources: Map<string, object>;
+  private test: Array<object> = new Array<object>();
   private timers: Map<string, any>;
   private knowLocations: Map<string, IAdventureLocation>
 
@@ -54,9 +58,11 @@ export class GamedataService implements OnInit {
   //Alert
   private alerter: AlertController;
   //Router
-  private router:Router;
+  private router: Router;
   // Current Theme
-  public currentTheme:string;
+  public currentTheme: string;
+  // Current Item Id;
+  public currentItemId: number;
 
   constructor(private toastControl: ToastController, alertCtrl: AlertController, private rtr: Router) {
     this.toaster = toastControl;
@@ -74,6 +80,9 @@ export class GamedataService implements OnInit {
 
   }
 
+  //endregion
+
+  //region saveload
   public TimeTilAutosave(): number {
     return this.timeTillAutosave;
   }
@@ -88,7 +97,6 @@ export class GamedataService implements OnInit {
     const autosaveTimer = setInterval(() => {
       this.SaveCountDown()
     }, 1000)
-    this.UpSertResourceValue(new WeakSpiritHerb(Element.earth), new Decimal(1));
   }
 
   private ResumeLoadedGameTimers() {
@@ -98,9 +106,11 @@ export class GamedataService implements OnInit {
     const autosaveTimer = setInterval(() => {
       this.SaveCountDown()
     }, 1000)
+    //TODO: Un-Break this
+    /**
     this.knownResources.forEach((res) => {
       this.StartRestartTimer(res);
-    })
+    })*/
   }
 
   private FixJSONMapsToDecimals() {
@@ -148,6 +158,30 @@ export class GamedataService implements OnInit {
     }
   }
 
+  public async DeleteGame() {
+    const alert = await this.alerter.create({
+      header: 'Wipe Local Storage: Still Unfinished',
+      message: 'Wipe All Game Data from Local Storage? This is irreversible!',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'primary',
+          id: 'cancel-button'
+        }, {
+          text: 'Okay',
+          id: 'confirm-button',
+          cssClass: "danger",
+          handler: () => {
+            localStorage.removeItem(LOCAL_STORAGE_NAME);
+            this.router.navigate(['/']);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   private static MapEncoder(key, value) {
     if (value instanceof Map) {
       return {
@@ -172,56 +206,126 @@ export class GamedataService implements OnInit {
     this.timeTillAutosave = this.timeTillAutosave - 1;
   }
 
+  //endregion
+
+  //region resourcemanagement
   public GetResourceValue(item: IBaseItem): Decimal {
-    if (this.ItemIsKnown(item)) {
-      const dec = this.resourceAmounts.get(item.name).get(item.element);
+    if (this.ItemElementIsKnown(item)) {
+      const dec = this.resourceAmounts.get(item.baseName).get(item.element);
       return dec;
     } else {
       return new Decimal(NaN);
     }
   }
 
-  private ItemIsKnown(item: IBaseItem): boolean {
-    if (this.resourceAmounts.has(item.name)) {
-      if (this.resourceAmounts.get(item.name).has(item.element)) {
+  private ItemElementIsKnown(item: IBaseItem): boolean {
+    if (this.resourceAmounts.has(item.baseName)) {
+      if (this.resourceAmounts.get(item.baseName).has(item.element)) {
         return true;
       }
     }
     return false;
   }
 
+  public IsBaseItemKnown(item: IBaseItem): boolean {
+    return this.resourceAmounts.has(item.baseName)
+  }
+
   public UpSertResourceValue(item: IBaseItem, value: Decimal): void {
-    //Add value
-    if (this.ItemIsKnown(item)) {
-      let it = this.resourceAmounts.get(item.name).get(item.element)
-      it = it.add(value);
-      this.resourceAmounts.get(item.name).set(item.element, it);
+    if(this.IsBaseItemKnown(item)) {
+      if (this.ItemElementIsKnown(item)) {
+        let it = this.resourceAmounts.get(item.baseName).get(item.element);
+        it = it.add(value);
+        this.resourceAmounts.get(item.baseName).set(item.element, it);
+      } else {
+        //we know the _Base_ item, but not the element
+        this.MakeResourceKnown(item);
+        //new item, new element
+        let m = this.resourceAmounts.get(item.baseName);
+        m.set(item.element, item.baseResourceAmount);
+      }
     } else {
+      //Brand new item & element
       this.MakeResourceKnown(item);
-      //new item, new element
-      this.resourceAmounts.set(item.name, new Map<Element, Decimal>().set(item.element, value));
-      //Every time we add a new item / element, add it to the known items map
-      this.knownResources.set(item.name, item);
-      // Start the timer
-      this.StartRestartTimer(item);
+      // Resource values
+      this.resourceAmounts.set(item.baseName, new Map<Element, Decimal>().set(item.element, item.baseResourceAmount));
     }
     //Tag 'tick' time
     item.lastTick = Date.now();
   }
 
-  public GetAllKnownResources(): Array<IBaseItem> {
-    let res = Array.from(this.knownResources.values());
-    return res;
+  public GetAllKnownResources(): object[] {
+    return Array.from(this.knownResources.values());
   }
 
   public MakeResourceKnown(item: IBaseItem) {
+    item.id = this.currentItemId;
+    this.currentItemId += 1;
     // add to know resources
-    this.knownResources.set(item.name, item);    // start times with default, base settings
+    this.knownResources.set(item.displayName, item);
+    this.test.push(item);
     //Calculate required tick-values
     UtilityFunctions.CalcBarPercValues(item);
-    //Start Timer & add to 'list of timers'
+    //Toast that we unlocked a new item!
+    const msg = 'Unlocked New Item: ' + item.displayName
+    this.Toast(msg, 2500, 'success');
+    console.log(this.knownResources);
+    console.log(this.test);
   }
 
+
+  public GenerateRandomElementFromLocationItem(location: IAdventureLocation, item: IBaseItem) {
+    let haveElement = false;
+    //Irritating JS & ShallowCopies. THis one line cost me like 4 hours
+    let newItem:IBaseItem = Object.create(item);
+    //Loop until we get an element.
+    const maxLoops = 1000;
+    let currentLoop = 0;
+    while (!haveElement || currentLoop > maxLoops) {
+      for (let [key, value] of location.elementalPresence) {
+        let x = Math.random();
+        if (x > value) {
+          newItem.element = key;
+          haveElement = true;
+          break; //redundant?
+        }
+      }
+      currentLoop += 1;
+    }
+    newItem.RegenerateDisplayName();
+    this.UpSertResourceValue(newItem, newItem.baseResourceAmount);
+  }
+
+  public HaveDiscoveredAllElementVariants(item: IBaseItem) {
+    let fire, earth, metal, wood, water = false;
+    //Could loop, but its only 5 calls.
+    if (this.IsBaseItemKnown(item)) {
+      fire = this.resourceAmounts.get(item.baseName).has(Element.fire);
+      earth = this.resourceAmounts.get(item.baseName).has(Element.earth);
+      metal = this.resourceAmounts.get(item.baseName).has(Element.metal);
+      wood = this.resourceAmounts.get(item.baseName).has(Element.wood);
+      water = this.resourceAmounts.get(item.baseName).has(Element.water);
+    }
+    return fire && earth && metal && wood && water;
+  }
+
+  public HaveDiscoveredAllElementVariantsInArea(location: IAdventureLocation, item: IBaseItem) {
+    let haveAll = false;
+    if (this.IsBaseItemKnown(item)) {
+      for (let [key, value] of location.elementalPresence) {
+        haveAll = this.resourceAmounts.get(item.baseName).has(key);
+        if (!haveAll)
+          return false;
+      }
+    } else {
+      return false
+    }
+    return true;
+  }
+
+  //endregion
+
+  //region timers
   private StartRestartTimer(item: IBaseItem) {
     if (this.isLoneWolf) {
       clearInterval(this.loneAction);
@@ -230,18 +334,18 @@ export class GamedataService implements OnInit {
       }, this.progressBarUpdateInterval)
     } else {
       //TODO: Limit to X People Per Y Thing
-      if (!this.timers.has(item.name)) {
+      if (!this.timers.has(item.baseName)) {
         let nTimer = setInterval(() => {
           this.UpdateProgressAndAddItems(item)
         }, this.progressBarUpdateInterval);
-        this.timers.set(item.name, nTimer);
+        this.timers.set(item.baseName, nTimer);
       } else {
         // Grab timer ID & stop timer
-        clearInterval(this.timers.get(item.name));
+        clearInterval(this.timers.get(item.baseName));
         let id = setInterval(() => {
           this.UpdateProgressAndAddItems(item)
         }, this.progressBarUpdateInterval);
-        this.timers.set(item.name, id);
+        this.timers.set(item.baseName, id);
       }
     }
   }
@@ -251,49 +355,26 @@ export class GamedataService implements OnInit {
       item.barValue += item.percentPerTick;
     } else {
       //STOP Timer
-      clearInterval(this.timers.get(item.name));
+      clearInterval(this.timers.get(item.baseName));
       item.barValue = 0;
       this.UpSertResourceValue(item, item.baseResourceAmount);
       this.StartRestartTimer(item);
     }
   }
 
-  public async Toast(message: string, duration: number) {
-    const t = await this.toaster.create({
+  //endregion
+
+  //region userInteractions
+  public Toast(message: string, duration: number, color: string = "warning") {
+    this.toaster.create({
       message: message,
-      duration: duration
-    })
-    await t.present();
+      duration: duration,
+      color: color,
+      position: 'bottom'
+    }).then(t => t.present())
   }
 
-  public async DeleteGame() {
-    const alert = await this.alerter.create({
-      header: 'Wipe Local Storage: Still Unfinished',
-      message: 'Wipe All Game Data from Local Storage? This is irreversible!',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'primary',
-          id: 'cancel-button',
-          handler: (blah) => {
+  //endregion
 
-          }
-        }, {
-          text: 'Okay',
-          id: 'confirm-button',
-          cssClass: "danger",
-          handler: () => {
-            localStorage.removeItem(LOCAL_STORAGE_NAME);
-            this.router.navigate(['/']);
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
 
-  public GenerateItemFromLocation(location:IAdventureLocation){
-
-  }
 }

@@ -20,6 +20,7 @@
     </ion-card>
   </ng-container>
   <cvi-wanderer-crafting *ngIf="this.activeSegment.localeCompare('crafting')===0"></cvi-wanderer-crafting>
-  <cvi-wanderer-wandering *ngIf="this.activeSegment.localeCompare('wander') === 0"></cvi-wanderer-wandering>
+  <cvi-wanderer-wandering [locations]="this.locations" [spirtHerb]="this.spiritHerb"
+                          *ngIf="this.activeSegment.localeCompare('wander') === 0"></cvi-wanderer-wandering>
   <cvi-wanderer-training *ngIf="this.activeSegment.localeCompare('training')=== 0"></cvi-wanderer-training>
 </ion-content>

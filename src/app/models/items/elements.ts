@@ -3,7 +3,8 @@ export enum Element {
   earth,
   metal,
   water,
-  wood
+  wood,
+  NULL
 }
 
 export class ElementMaps {

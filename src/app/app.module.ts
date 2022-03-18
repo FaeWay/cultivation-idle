@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
@@ -7,10 +7,11 @@ import {AppRoutingModule} from './app-routing.module';
 import {GamedataService} from "./services/gamedata.service";
 import {CoreModule} from "./components/core/core.module";
 import {OverviewModule} from "./components/overview/overview.module";
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {environment} from '../environments/environment';
 import {WandererModule} from "./phases/Stage00wanderer/wanderer.module";
 import {FormsModule} from "@angular/forms";
+import {ErrorHandlerService} from "./services/error-handler.service";
 
 
 @NgModule({
@@ -37,7 +38,12 @@ import {FormsModule} from "@angular/forms";
     }),
     FormsModule
   ],
-  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy}, GamedataService],
+  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+    GamedataService,
+    {
+      provide: ErrorHandler,
+      useClass: ErrorHandlerService
+    }],
   bootstrap: [AppComponent],
 })
 export class AppModule {

@@ -1,4 +1,16 @@
 
-Wander (find new locations)
-Gather Random Herbs
-Gather X Discovered Herb
+<ion-select [(ngModel)]="selectedLocationName" (ionChange)="this.updateSelectionLocation()" #locationSelect
+            [hidden]="hideLocationSelect" placeholder="Select Location">
+  <ion-select-option *ngFor="let loc of locations; let i = indexs">{{loc.name}}</ion-select-option>
+</ion-select>
+
+<cvi-unlock-new-item
+  *ngIf="!gds.HaveDiscoveredAllElementVariantsInArea(this.locations[0], spirtHerb)"
+  [item]="this.spirtHerb"
+  [GenerateRandomItemFromBase]="true"
+  [location]="this.selectedLocation"
+  [actionName]="'Hunt For Herbs'"
+></cvi-unlock-new-item>
+<ion-card>
+  <ion-card-header>Look for a known herb / Gather </ion-card-header>
+</ion-card>

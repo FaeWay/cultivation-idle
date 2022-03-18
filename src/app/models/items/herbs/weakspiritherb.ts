@@ -3,8 +3,10 @@ import {Element, ElementMaps} from "../elements";
 import Decimal from "break_eternity.js";
 
 export class WeakSpiritHerb implements IBaseItem {
+  id: number;
   element: Element;
-  name: string
+  displayName: string
+  baseName: string
   qi: Decimal;
   baseResourceAmount: Decimal;
   lastTick: number;
@@ -12,17 +14,25 @@ export class WeakSpiritHerb implements IBaseItem {
   percentPerTick: number;
   barValue: number;
 
-  constructor(element:Element, qi?: Decimal) {
+  constructor(element: Element, qi?: Decimal) {
     this.element = element;
-    this.name = "Weak " + ElementMaps.display.get(element) + " Herb";
-    if(qi){
+    this.baseName = "Weak Spirit Herb";
+    this.RegenerateDisplayName();
+    if (qi) {
       this.qi = qi;
     } else {
       qi = new Decimal();
     }
+    this.element = element;
+    this.RegenerateDisplayName();
     this.baseResourceAmount = new Decimal(1);
     this.loopTime = 1000;
     this.lastTick = 0;
+  }
+
+  RegenerateDisplayName() {
+    this.displayName = "Weak " + ElementMaps.display.get(this.element) + " Herb";
+    console.log(this.displayName);
   }
 
 }

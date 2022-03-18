@@ -20,10 +20,18 @@ export class ItemProgressBar implements OnInit {
   @Output()
   onClick: EventEmitter<any> = new EventEmitter<any>()
 
+  @Input()
+  actionDisplayOverride:string;
+
+  private itemDisplay:string;
   constructor() { }
 
   ngOnInit() {
-
+    if(this.actionDisplayOverride){
+      //this.itemDisplay = this.actionDisplayOverride;
+    } else {
+      //this.itemDisplay = this.item.displayName;
+    }
   }
 
 }

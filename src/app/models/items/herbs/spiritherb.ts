@@ -3,8 +3,9 @@ import {Element, ElementMaps} from "../elements";
 import Decimal from "break_eternity.js";
 
 export class SpiritHerb implements IBaseItem {
+  id: number;
   element: Element;
-  name: string
+  baseName: string
   qi: Decimal;
   baseResourceAmount: Decimal;
   lastTick: number;
@@ -14,7 +15,8 @@ export class SpiritHerb implements IBaseItem {
 
   constructor(element:Element, qi?: Decimal) {
     this.element = element;
-    this.name = ElementMaps.display.get(element) + "Spirit Herb";
+    this.baseName = "Spirit Herb";
+    this.RegenerateDisplayName();
     if(qi){
       this.qi = qi;
     } else {
@@ -23,6 +25,12 @@ export class SpiritHerb implements IBaseItem {
     this.baseResourceAmount = new Decimal(1);
     this.loopTime = 1000;
     this.lastTick = 0;
+  }
+
+  displayName: string;
+
+  RegenerateDisplayName() {
+    this.displayName = ElementMaps.display.get(this.element) + this.baseName;
   }
 
 }

@@ -1,13 +1,12 @@
 <ion-content>
   <ion-toolbar>
-    <ion-segment>
+    <ion-segment value="resources">
       <ion-segment-button value="resources">Resources</ion-segment-button>
-      <ion-segment-button value="player">Player </ion-segment-button>
+      <ion-segment-button value="player">Player</ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <ng-container *ngFor="let res of gds.GetAllKnownResources()">
-      <cvi-item-progress-bar [action]="'Gather'" [item]="res" [totalHeld]="gds.GetResourceValue(res)">
-      </cvi-item-progress-bar>
-  </ng-container>
+  <cvi-item-progress-bar *ngFor="let res of gds.GetAllKnownResources()" [action]="''" [item]="res"
+                         [totalHeld]="gds.GetResourceValue(res)">
+  </cvi-item-progress-bar>
 </ion-content>
 

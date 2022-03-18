@@ -3,8 +3,10 @@ import {Element, ElementMaps} from "../elements";
 import Decimal from "break_eternity.js";
 
 export class LustrumHerb implements IBaseItem {
+  id: number;
   element: Element;
-  name: string
+  displayName: string;
+  baseName: string
   qi: Decimal;
   baseResourceAmount: Decimal;
   lastTick: number;
@@ -14,7 +16,8 @@ export class LustrumHerb implements IBaseItem {
 
   constructor(element:Element, qi?: Decimal) {
     this.element = element;
-    this.name = ElementMaps.display.get(element) + "Millennial Herb";
+    this.baseName = "Millennial Herb";
+    this.RegenerateDisplayName();
     if(qi){
       this.qi = qi;
     } else {
@@ -24,5 +27,10 @@ export class LustrumHerb implements IBaseItem {
     this.loopTime = 1000;
     this.lastTick = 0;
   }
+
+  RegenerateDisplayName() {
+    this.displayName = ElementMaps.display.get(this.element) + "Millennial Herb";
+  }
+
 
 }
