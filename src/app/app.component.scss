@@ -1,5 +1,5 @@
-.cultivation-menu {
-  --width: 120px;
-  --min-height: 100%;
-  height: 100%;
+.split-pane-ios.split-pane-visible>.split-pane-side,
+.split-pane-md.split-pane-visible>.split-pane-side{
+  max-width: 200px;
+  min-width: 200px;
 }

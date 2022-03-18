@@ -1,18 +1,13 @@
 <ion-content>
   <ion-toolbar>
-    <ion-segment value="all">
+    <ion-segment>
       <ion-segment-button value="resources">Resources</ion-segment-button>
+      <ion-segment-button value="player">Player </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <ion-card *ngFor="let res of gds.GetAllKnownResources()">
-    <ion-card-header>{{res.name}} ({{ res.baseResourceAmount / (res.loopTime / 1000)  }}/sec)
-      <ion-card-subtitle>Held: {{this.gds.GetResourceValue(res)}}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <cvi-progress-bar [barValue]="res.barValue">
-      </cvi-progress-bar>
-
-    </ion-card-content>
-  </ion-card>
+  <ng-container *ngFor="let res of gds.GetAllKnownResources()">
+      <cvi-item-progress-bar [action]="'Gather'" [item]="res" [totalHeld]="gds.GetResourceValue(res)">
+      </cvi-item-progress-bar>
+  </ng-container>
 </ion-content>
 

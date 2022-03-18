@@ -1,4 +1,5 @@
 export enum CultivationRealms {
+  qiGathering,
   houtian,
   xiantian,
   stormCore,
@@ -11,8 +12,4 @@ export enum CultivationRealms {
   empyrean,
   trueDivitiny,
   immortality
-}
-
-export enum BodyTransformationEquivalent {
-  mappStuffHere
 }

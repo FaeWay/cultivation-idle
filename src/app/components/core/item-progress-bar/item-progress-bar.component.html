@@ -1,0 +1,14 @@
+<button class="full-width">
+  <span>
+    {{this.action}}
+  </span>
+  <ion-card>
+    <ion-card-header>{{this.item.name}} ({{ this.item.baseResourceAmount / (this.item.loopTime / 1000)  }}
+      / sec): {{this.totalHeld}}</ion-card-header>
+    <ion-card-content>
+      <ion-row>
+        <ion-progress-bar class="action-progress-bar" value="{{this.item.barValue}}"></ion-progress-bar>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+</button>

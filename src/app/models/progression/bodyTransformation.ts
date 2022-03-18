@@ -34,6 +34,7 @@ export enum DaoPalaceStars {
 
 export class BodyTransformation {
   stage: BodyTransformationStage;
-
+  gate: EightGates
+  start: DaoPalaceStars
 }
 

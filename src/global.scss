@@ -24,3 +24,13 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.slim-toolbar {
+  --min-height: 32px;
+}
+.top-margin {
+  margin-top: 48px;
+}
+.full-width {
+  width: 100%;
+}

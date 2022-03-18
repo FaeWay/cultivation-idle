@@ -1,4 +1,4 @@
-<ion-toolbar>
+<ion-toolbar class="slim-toolbar">
   <ion-buttons slot="start">
     <ion-menu-toggle>
       <ion-button>
@@ -6,25 +6,37 @@
       </ion-button>
     </ion-menu-toggle>
   </ion-buttons>
+  <ion-button slot="end" (click)="showThemeSelect()">
+    <ion-icon name="contrast"></ion-icon>
+  </ion-button>
   <ion-item slot="end">Autosave In: {{this.gds.TimeTilAutosave()}}</ion-item>
   <ion-title>Cultivation Idle</ion-title>
 </ion-toolbar>
-<ion-content>
-  <ion-menu side="start" type="push" content-id="main" class="cultivation-menu">
+
+<ion-split-pane contentId="main" when="sm" class="top-margin">
+  <ion-menu side="start" type="push" content-id="main">
     <ion-content>
       <ion-list>
-        <ion-item routerLink="overview">Overview</ion-item>
-        <ion-item routerLink="wanderer">Wander</ion-item>
-        <ion-item>Adventure</ion-item>
-        <ion-item>Cultivation</ion-item>
-        <ion-item>Ranch</ion-item>
-        <ion-item>Farm</ion-item>
-        <ion-item>Tending</ion-item>
-        <ion-item>Smithing</ion-item>
-        <ion-item>Refining</ion-item>
-        <ion-item>Acknowledgements</ion-item>
+        <ion-item *ngIf="true" routerLink="overview">Overview</ion-item>
+        <ion-item *ngIf="gds.canWander" routerLink="wanderer">Wander</ion-item>
+        <ion-item *ngIf="gds.canAdventure">Adventure</ion-item>
+        <ion-item *ngIf="gds.canCultivate">Cultivation</ion-item>
+        <ion-item *ngIf="gds.canRanch">Ranch</ion-item>
+        <ion-item *ngIf="gds.canFarm">Farm</ion-item>
+        <ion-item *ngIf="gds.canTend">Tending</ion-item>
+        <ion-item *ngIf="gds.canSmith">Smithing</ion-item>
+        <ion-item *ngIf="gds.canRefine">Refining</ion-item>
+        <ion-item routerLink="settings">Settings</ion-item>
+        <ion-item routerLink="built-with">Acknowledgements</ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>
-  <ion-router-outlet id="main" class="ion-padding"></ion-router-outlet>
-</ion-content>
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-split-pane>
+
+<ion-select
+  [(ngModel)]="selectTheme" (ionChange)="dynamicTheme()" #themeSelect [hidden]="hideList">
+  <ion-select-option [value]="theme.class" *ngFor="let theme of themeColor;let i = indexs">
+    {{theme.name}}
+  </ion-select-option>
+</ion-select>

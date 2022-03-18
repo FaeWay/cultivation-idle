@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-segment (ionChange)="segmentChanged($event)" value="wanderer-overview">
+      <ion-segment-button value="wanderer-overview">Wanderer Overview</ion-segment-button>
+      <ion-segment-button *ngIf="this.gds.wandererCanWander" value="wander">Wander</ion-segment-button>
+      <ion-segment-button *ngIf="this.gds.wandererCanTrain" value="training">Training</ion-segment-button>
+      <ion-segment-button *ngIf="this.gds.wandererCanCraft" value="crafting">Crafting</ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ng-container *ngIf="this.activeSegment.localeCompare('wanderer-overview') === 0">
+    <ion-card>
+      <ion-card-header>
+        Possible Actions
+      </ion-card-header>
+      <ion-card-content>
+        Overview Coming Soon...
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+  <cvi-wanderer-crafting *ngIf="this.activeSegment.localeCompare('crafting')===0"></cvi-wanderer-crafting>
+  <cvi-wanderer-wandering *ngIf="this.activeSegment.localeCompare('wander') === 0"></cvi-wanderer-wandering>
+  <cvi-wanderer-training *ngIf="this.activeSegment.localeCompare('training')=== 0"></cvi-wanderer-training>
+</ion-content>
