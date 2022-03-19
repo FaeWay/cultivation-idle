@@ -1,8 +1,0 @@
-<button class="full-width" style="width:100%;" (click)="startTimer()" [disabled]="AllNeededFields()">
-  <ion-card>
-    <ion-card-content>
-      {{this.actionName}}
-      <ion-progress-bar *ngIf="this.barVal > 0" [value]="this.barVal"></ion-progress-bar>
-    </ion-card-content>
-  </ion-card>
-</button>

@@ -1,7 +1,0 @@
-{
-  "name": "cultivation-idle",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
