@@ -26,7 +26,7 @@ export class WandererWanderingComponent implements OnInit {
   //herb select bidnings
   public selectedHerbName: string;
   public possibleHerbs: Array<IBaseItem>;
-  private selectedHerb: IBaseItem;
+  public selectedHerb: IBaseItem;
 
   gds: GamedataService;
 
@@ -79,21 +79,8 @@ export class WandererWanderingComponent implements OnInit {
     }
   }
 
-  haveLocationsToDiscover(): boolean {
-    let foundAllSubs = true;
-    for (let loc of this.possibleLocations) {
-      if (loc.hasSubLocations) {
-        foundAllSubs = this.gds.FoundAllSubLocations(loc);
-        if (foundAllSubs)
-          return false;
-      }
-    }
-    return true;
+  startGathering() {
+    this.gds.StopTimerForItem(this.selectedHerb);
+    this.gds.StartRestartTimer(this.selectedHerb);
   }
-
-  wanderableLocations() {
-    //TODO: Diff from 'Know locations' to LocationMaps.SubLocations and pull items from GDS.locations
-  }
-
-
 }

@@ -11,6 +11,5 @@ export class ErrorHandlerService implements  ErrorHandler {
 
   handleError(error:any) {
     this.gds.Toast(error?.message || 'Unknown Error Occurred', 3500, "danger");
-    console.error(error?.message);
   }
 }

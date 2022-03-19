@@ -14,6 +14,7 @@ export class BambooForest implements IAdventureLocation {
   hasSpecialFeature: boolean;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
+  unlockTime: number;
 
   constructor() {
     this.name = 'Bamboo Forest';
@@ -31,9 +32,8 @@ export class BambooForest implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>(); //None here at the base level.
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
+    this.unlockTime = 1;
   }
-
-
 }
 
 export class BambooForestFringe implements IAdventureLocation {
@@ -46,6 +46,7 @@ export class BambooForestFringe implements IAdventureLocation {
   subLocations: Array<IAdventureLocation>;
   hasSpecialFeature: boolean;
   specialFeatures: Array<ISpecialFeature>;
+  unlockTime: number;
 
   constructor() {
     this.name = "Bamboo Forest Fringe";
@@ -58,8 +59,8 @@ export class BambooForestFringe implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
+    this.unlockTime = 25000;
   }
-
 }
 
 export class BambooForestGrove implements IAdventureLocation {
@@ -72,6 +73,7 @@ export class BambooForestGrove implements IAdventureLocation {
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
+  unlockTime: number;
 
   constructor() {
     this.name = "Bamboo Forest Grove";
@@ -85,8 +87,8 @@ export class BambooForestGrove implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
+    this.unlockTime = 55000;
   }
-
 }
 
 export class BambooForestDepths implements IAdventureLocation {
@@ -99,6 +101,8 @@ export class BambooForestDepths implements IAdventureLocation {
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
+  unlockTime: number;
+
   constructor() {
     this.name = "Bamboo Forest Depths";
     this.elementalPresence = new Map<Element, number>();
@@ -110,5 +114,6 @@ export class BambooForestDepths implements IAdventureLocation {
     this.requiredSpirit = 1;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
+    this.unlockTime = 100000;
   }
 }

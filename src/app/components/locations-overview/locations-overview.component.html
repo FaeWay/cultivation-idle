@@ -1,0 +1,23 @@
+<ion-content>
+  <ion-card>
+    <ion-card-header>Fae-Way Proclaims</ion-card-header>
+    <ion-card-content>
+      This area is under construction. 'Tis ugly, but readable.
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngFor="let loc of this.gds.GetAllKnownLocations()">
+    <ion-card-header>{{loc.name}}</ion-card-header>
+    <ion-card-content>
+      <ul>
+        <li>Required Body: {{loc.requiredBody}}</li>
+        <li>Required Spirit: {{loc.requiredSpirit}}</li>
+        <li>Elements Present:</li>
+        <ul>
+          <li *ngFor="let ele of this.ElementMapToArray(loc.elementalPresence)">{{GetDisplayName(ele)}}
+            : {{loc.elementalPresence.get(ele)}} %
+          </li>
+        </ul>
+      </ul>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

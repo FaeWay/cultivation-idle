@@ -8,11 +8,54 @@
   <ion-card>
     <ion-card-header>Fae-Way Proclaims</ion-card-header>
     <ion-card-content>
-      This of this as 'Home'. A Grid of quick-actions (for all unlocked features)& some quick-look stats is envisioned here.
+      This of this as 'Home'. A Grid of quick-actions (for all unlocked features)& some quick-look stats is envisioned
+      here.
     </ion-card-content>
   </ion-card>
-  <cvi-item-progress-bar *ngFor="let res of gds.GetAllKnownResources()" [action]="''" [item]="res"
-                         [totalHeld]="gds.GetResourceValue(res)">
-  </cvi-item-progress-bar>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            Resources
+          </ion-card-header>
+          <ion-card-content>
+            <ion-label>The resources you know about. More details are on the resources page</ion-label>
+            <ion-button *ngFor="let r of this.gds.GetAllKnownResources()" fill="outline"
+                        expand="full">{{r.displayName}} </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            Current Actions
+          </ion-card-header>
+          <ion-card-content>
+            Coming Soon...
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            Known Locations
+          </ion-card-header>
+          <ion-card-content>
+            Coming Soon...
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+      </ion-col>
+      <ion-col>
+      </ion-col>
+      <ion-col>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
 </ion-content>
 

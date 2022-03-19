@@ -15,10 +15,17 @@ import {ErrorHandlerService} from "./services/error-handler.service";
 import {BuiltWithComponent} from "./components/misc/built-with/built-with.component";
 import {NotfoundComponent} from "./components/misc/not-found/notfound.component";
 import {SettingsComponent} from "./components/settings/settings.component";
+import {ResourceOverviewComponent} from "./components/resource-overview/resource-overview.component";
+import {LocationsOverviewComponent} from "./components/locations-overview/locations-overview.component";
 
 
 @NgModule({
-  declarations: [AppComponent, BuiltWithComponent, NotfoundComponent, SettingsComponent],
+  declarations: [AppComponent,
+    BuiltWithComponent,
+    NotfoundComponent,
+    SettingsComponent,
+    ResourceOverviewComponent,
+    LocationsOverviewComponent],
   entryComponents: [],
   imports: [
     BrowserModule,

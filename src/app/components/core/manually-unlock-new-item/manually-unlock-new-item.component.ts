@@ -15,13 +15,13 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
   item: IBaseItem;
 
   @Input()
-  location: IAdventureLocation;
+  baseLocation: IAdventureLocation;
 
   @Input()
-  GenerateRandomItemFromBase: boolean;
+  generateRandomItemFromBase: boolean;
 
   @Input()
-  IsLocationUnlock: boolean;
+  isLocationUnlock: boolean;
 
   @Input()
   actionName: string;
@@ -29,10 +29,11 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
   @Output()
   delayComplete: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-
-  private gds: GamedataService;
   private timer: any;
-  public  barVal: number = 0;
+  private locBarPerc: number;
+  private randomUnlockLocaiton: IAdventureLocation;
+  private gds: GamedataService;
+  public barVal: number = 0;
 
 
   constructor(private data: GamedataService) {
@@ -40,11 +41,20 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.isLocationUnlock) {
+      this.randomUnlockLocaiton = this.gds.FindRandomSubLocation(this.baseLocation);
+      if (this.randomUnlockLocaiton !== undefined) {
+        this.locBarPerc = 100 / (this.randomUnlockLocaiton.unlockTime / 100) / 100;
+        if (this.locBarPerc === undefined) {
+          throw Error("Location % Per-Tick is NaN")
+        }
+      }
+    }
   }
 
 
   public RandomElementNewItem() {
-    this.gds.GenerateRandomElementFromLocationItem(this.location, this.item)
+    this.gds.GenerateRandomElementFromLocationItem(this.baseLocation, this.item)
   }
 
   public SpecificElementNewItem(item: IBaseItem) {
@@ -55,10 +65,10 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
     if (this.item === undefined) {
       return true;
     }
-    if (this.location === undefined) {
+    if (this.baseLocation === undefined) {
       return true;
     }
-    if (this.IsLocationUnlock && this.GenerateRandomItemFromBase)
+    if (this.isLocationUnlock && this.generateRandomItemFromBase)
       throw new Error("Unlock a location OR an item. NOT BOTH");
     return false;
   }
@@ -71,15 +81,25 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
 
   private updateProgressBar() {
     if (this.barVal < 1) {
-      this.barVal += this.item.percentPerTick;
+      if (!this.isLocationUnlock) {
+        this.barVal += this.item.percentPerTick;
+      } else {
+        this.barVal += this.locBarPerc;
+      }
     } else {
       //STOP Timer
       clearInterval(this.timer)
       this.barVal = 0;
-      if (this.GenerateRandomItemFromBase) {
-        this.RandomElementNewItem();
+      if (!this.isLocationUnlock) {
+        if (this.generateRandomItemFromBase) {
+          this.RandomElementNewItem();
+        } else {
+          this.SpecificElementNewItem(this.item);
+        }
       } else {
-        this.SpecificElementNewItem(this.item);
+        this.gds.DiscoverLocation(this.randomUnlockLocaiton);
+        //Try and get a new location to discover!
+        this.randomUnlockLocaiton = this.gds.FindRandomSubLocation(this.baseLocation)
       }
     }
   }

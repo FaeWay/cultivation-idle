@@ -428,25 +428,23 @@ export class GamedataService implements OnInit {
       return true; //no sub locs, therefound them all
     let have: boolean = true; // assume we have found them all
     if (LocationMaps.subLocations.has(location.name)) {
-      for (let [slkey, slval] of LocationMaps.subLocations.get(location.name)) {
+      for (let slval of LocationMaps.subLocations.get(location.name)) {
         have = this.knowLocations.has(slval);
         if (!have)
           return false;
       }
     }
-    return false;
+    return true;
   }
 
-  public FindRandomSubLocation(baseLocation: IAdventureLocation) {
+  public FindRandomSubLocation(baseLocation: IAdventureLocation): IAdventureLocation {
     if (baseLocation.hasSubLocations) {
       //TODO: Make this a player-stats based chance-roll, instead of instant-gratification of 'Found one!'
       for (let [key, val] of LocationMaps.subLocations) {
         for (let sl of val) {
           //If we dont know this sub-location..
           if (!this.knowLocations.has(sl)) {
-            //grab it, and discover it
-            this.DiscoverLocation(this.masterLocationList.get(sl));
-            return;
+            return this.masterLocationList.get(sl);
           }
         }
       }
@@ -454,9 +452,8 @@ export class GamedataService implements OnInit {
   }
 
   public GetKnowLocationsFromBase(baseLocation: IAdventureLocation): Array<IAdventureLocation> {
-
     let kl = new Array<IAdventureLocation>();
-    if(baseLocation.hasSubLocations) {
+    if (baseLocation.hasSubLocations) {
       const sl = LocationMaps.subLocations.get(baseLocation.name);
       //Sub-locations
       for (let sln of sl) {
@@ -464,20 +461,24 @@ export class GamedataService implements OnInit {
           kl.push(this.knowLocations.get(sln))
         }
       }
-    } else {
-      //Check for the base locations, and make sure we return that as well
-      //THis should never fail.
-      if(!this.knowLocations.has(baseLocation.name))
-        throw new Error("Attempting to serach for sub-locations without discogering the Top-Level Location!");
-      kl.push(baseLocation);
     }
+    //Check for the base locations, and make sure we return that as well
+    //THis should never fail.
+    if (!this.knowLocations.has(baseLocation.name))
+      throw new Error("Attempting to serach for sub-locations without discogering the Top-Level Location!");
+    kl.push(baseLocation);
     return kl;
+  }
+
+
+  public GetAllKnownLocations():Array<IAdventureLocation> {
+    return Array.from(this.knowLocations.values()) as Array<IAdventureLocation>;
   }
 
   //endregion
 
   //region timers
-  private StartRestartTimer(item: IBaseItem) {
+  public StartRestartTimer(item: IBaseItem) {
     if (this.isLoneWolf) {
       clearInterval(this.loneAction);
       this.loneAction = setInterval(() => {
@@ -497,6 +498,16 @@ export class GamedataService implements OnInit {
           this.UpdateProgressAndAddItems(item)
         }, this.progressBarUpdateInterval);
         this.timers.set(item.baseName, id);
+      }
+    }
+  }
+
+  public StopTimerForItem(item: IBaseItem) {
+    if (this.isLoneWolf) {
+      clearInterval(this.loneAction);
+    } else {
+      if (this.timers.has(item.baseName)) {
+        clearInterval(this.timers.get(item.baseName).value);
       }
     }
   }

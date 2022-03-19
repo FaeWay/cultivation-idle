@@ -13,6 +13,7 @@ export interface IAdventureLocation {
   requiredBody: BodyTransformationStage;
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
+  unlockTime: number;
 }
 
 
