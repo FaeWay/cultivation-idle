@@ -304,8 +304,8 @@ export class GamedataService implements OnInit {
     item.lastTick = Date.now();
   }
 
-  public GetAllKnownResources(): object[] {
-    return Array.from(this.knownResources.values());
+  public GetAllKnownResources(): IBaseItem[] {
+    return Array.from(this.knownResources.values()) as Array<IBaseItem>;
   }
 
   public MakeResourceKnown(item: IBaseItem) {

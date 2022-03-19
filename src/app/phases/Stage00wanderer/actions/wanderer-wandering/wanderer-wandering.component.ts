@@ -18,15 +18,15 @@ export class WandererWanderingComponent implements OnInit {
   baseLocation: IAdventureLocation;
 
   //location select bindings
-  private selectedLocationName: string;
-  private selectedLocation: IAdventureLocation;
-  private hideLocationSelect: false;
+  public selectedLocationName: string;
+  public selectedLocation: IAdventureLocation;
+  public hideLocationSelect: false;
   private possibleLocations: Array<IAdventureLocation>;
 
   //herb select bidnings
-  private selectedHerbName: string;
+  public selectedHerbName: string;
+  public possibleHerbs: Array<IBaseItem>;
   private selectedHerb: IBaseItem;
-  private possibleHerbs: Array<IBaseItem>;
 
   gds: GamedataService;
 

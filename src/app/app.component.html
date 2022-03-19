@@ -38,7 +38,7 @@
 
 <ion-select
   [(ngModel)]="selectTheme" (ionChange)="dynamicTheme()" #themeSelect [hidden]="hideList">
-  <ion-select-option [value]="theme.class" *ngFor="let theme of themeColor;let i = indexs">
+  <ion-select-option [value]="theme.class" *ngFor="let theme of themeColor;">
     {{theme.name}}
   </ion-select-option>
 </ion-select>

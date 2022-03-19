@@ -21,7 +21,7 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
   GenerateRandomItemFromBase: boolean;
 
   @Input()
-  IsLocationUnlock:boolean;
+  IsLocationUnlock: boolean;
 
   @Input()
   actionName: string;
@@ -31,8 +31,9 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
 
 
   private gds: GamedataService;
-  private barVal: number = 0;
   private timer: any;
+  public  barVal: number = 0;
+
 
   constructor(private data: GamedataService) {
     this.gds = data;
@@ -57,12 +58,12 @@ export class ManuallyUnlockNewItemComponent implements OnInit {
     if (this.location === undefined) {
       return true;
     }
-    if(this.IsLocationUnlock && this.GenerateRandomItemFromBase)
+    if (this.IsLocationUnlock && this.GenerateRandomItemFromBase)
       throw new Error("Unlock a location OR an item. NOT BOTH");
     return false;
   }
 
-  private startTimer(){
+  public startTimer() {
     this.timer = setInterval(() => {
       this.updateProgressBar()
     }, 100)

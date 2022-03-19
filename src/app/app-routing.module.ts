@@ -1,8 +1,8 @@
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {NotfoundComponent} from "./components/misc/not-found/notfound.component";
-import {BuiltWith} from "./components/misc/built-with/built-with.component";
 import {SettingsComponent} from "./components/settings/settings.component";
+import {BuiltWithComponent} from "./components/misc/built-with/built-with.component";
 
 
 const routes: Routes = [
@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   {
     path: 'built-with',
-    component: BuiltWith
+    component: BuiltWithComponent
   },
   {
     path: "**",

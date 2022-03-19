@@ -12,14 +12,18 @@ import {environment} from '../environments/environment';
 import {WandererModule} from "./phases/Stage00wanderer/wanderer.module";
 import {FormsModule} from "@angular/forms";
 import {ErrorHandlerService} from "./services/error-handler.service";
+import {BuiltWithComponent} from "./components/misc/built-with/built-with.component";
+import {NotfoundComponent} from "./components/misc/not-found/notfound.component";
+import {SettingsComponent} from "./components/settings/settings.component";
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, BuiltWithComponent, NotfoundComponent, SettingsComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
+    FormsModule,
     AppRoutingModule,
     CoreModule,
     OverviewModule,
@@ -29,14 +33,7 @@ import {ErrorHandlerService} from "./services/error-handler.service";
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
-    }),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      // Register the ServiceWorker as soon as the app is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    FormsModule
+    })
   ],
   providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     GamedataService,

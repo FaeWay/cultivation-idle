@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     {name: 'Purple', class: 'purple'},
     {name: 'Default', class: 'dummyTheme'}
   ];
-  private selectTheme: string;
+  public  selectTheme: string;
   hideList =true;
   constructor(private gameData: GamedataService, private theme: ThemeService) {
     this.gds = gameData;

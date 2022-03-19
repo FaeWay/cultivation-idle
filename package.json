@@ -6,7 +6,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "build-ghpages": "ng build --configuration production --base-href https://faeway.github.io/cultivation-idle/"
   },
   "private": true,
   "dependencies": {

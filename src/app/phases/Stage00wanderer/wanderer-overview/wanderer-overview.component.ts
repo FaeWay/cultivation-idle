@@ -16,7 +16,7 @@ import {
 
 export class WandererOverviewComponent implements OnInit {
   activeSegment: string;
-  private gds: GamedataService;
+  gds: GamedataService;
   //Items found in wandering
   spiritHerb: WeakSpiritHerb;
   //base location found when wandering
