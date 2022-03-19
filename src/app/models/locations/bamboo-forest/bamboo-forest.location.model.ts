@@ -106,8 +106,8 @@ export class BambooForestDepths implements IAdventureLocation {
     this.elementalPresence.set(Element.fire, 0.2);
     this.isTopLevelLocation = false;
     this.hasSubLocations = false;
-    this.requiredBody = 0;
-    this.requiredSpirit = 0;
+    this.requiredBody = 1;
+    this.requiredSpirit = 1;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
   }

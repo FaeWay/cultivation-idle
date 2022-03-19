@@ -1,6 +1,7 @@
 import {IBaseItem} from "../baseItem.model";
 import {Element, ElementMaps} from "../elements";
 import Decimal from "break_eternity.js";
+import {UtilityFunctions} from "../../../Utils/utlity-functions";
 
 export class SpiritHerb implements IBaseItem {
   id: number;
@@ -25,6 +26,7 @@ export class SpiritHerb implements IBaseItem {
     this.baseResourceAmount = new Decimal(1);
     this.loopTime = 1000;
     this.lastTick = 0;
+    UtilityFunctions.CalcBarPercValues(this);
   }
 
   displayName: string;

@@ -5,7 +5,14 @@ import {Element} from "../models/items/elements";
 import {UtilityFunctions} from "../Utils/utlity-functions";
 import {AlertController, ToastController} from "@ionic/angular";
 import {Router} from "@angular/router";
-import {IAdventureLocation} from "../models/locations/location.model";
+import {IAdventureLocation, LocationMaps} from "../models/locations/location.model";
+import * as _ from 'lodash';
+import {
+  BambooForest,
+  BambooForestDepths,
+  BambooForestFringe,
+  BambooForestGrove
+} from "../models/locations/bamboo-forest/bamboo-forest.location.model";
 
 
 const fmt = require('swarm-numberformat')
@@ -23,9 +30,9 @@ export class GamedataService implements OnInit {
   private resourceAmounts: Map<string, Map<Element, Decimal>>;
   /// Display-Name
   private knownResources: Map<string, object>;
-  private test: Array<object> = new Array<object>();
   private timers: Map<string, any>;
-  private knowLocations: Map<string, IAdventureLocation>
+  private knowLocations: Map<string, IAdventureLocation>;
+  private masterLocationList: Map<string, IAdventureLocation>;
 
   private lastGameTick: number;
   private autosaveInterval: number = 15000;
@@ -70,7 +77,10 @@ export class GamedataService implements OnInit {
     this.router = rtr;
     this.resourceAmounts = new Map<string, Map<Element, Decimal>>();
     this.knownResources = new Map<string, IBaseItem>();
+    this.knowLocations = new Map<string, IAdventureLocation>();
+    this.masterLocationList = new Map<string, IAdventureLocation>();
     this.timers = new Map<string, any>();
+    this.SetupMasterListOfLocations();
     if (!this.LoadGame()) {
       this.InitNewGame();
     }
@@ -97,6 +107,9 @@ export class GamedataService implements OnInit {
     const autosaveTimer = setInterval(() => {
       this.SaveCountDown()
     }, 1000)
+    //We can always wander the Bamboo Forest!
+    const bbf = new BambooForest();
+    this.knowLocations.set(bbf.name, bbf);
   }
 
   private ResumeLoadedGameTimers() {
@@ -108,7 +121,7 @@ export class GamedataService implements OnInit {
     }, 1000)
     //TODO: Un-Break this
     /**
-    this.knownResources.forEach((res) => {
+     this.knownResources.forEach((res) => {
       this.StartRestartTimer(res);
     })*/
   }
@@ -129,12 +142,30 @@ export class GamedataService implements OnInit {
       // Resource Map
       resourceAmounts: JSON.stringify(this.resourceAmounts, GamedataService.MapEncoder),
       knownResources: JSON.stringify(this.knownResources, GamedataService.MapEncoder),
-      // Last time the Game-loop iterated
+      knowLocations: JSON.stringify(this.knowLocations, GamedataService.MapEncoder),
+      masterLocationList: JSON.stringify(this.masterLocationList, GamedataService.MapEncoder),
       lastGameTick: JSON.stringify(this.lastGameTick),
       autosaveInterval: this.autosaveInterval,
       timeTillAutosave: this.timeTillAutosave,
       ticksPerSecond: this.ticksPerSecond,
-      currentTheme: this.currentTheme
+      progressBarUpdateInterval: this.progressBarUpdateInterval,
+      currentTheme: this.currentTheme,
+      //UI Flags
+      canWander: this.canWander,
+      canAdventure: this.canAdventure,
+      canCultivate: this.canCultivate,
+      canRanch: this.canRanch,
+      canFarm: this.canFarm,
+      canTend: this.canTend,
+      canSmith: this.canSmith,
+      canRefine: this.canRefine,
+      showAcks: this.showAcks,
+      //Wander Specific flags
+      wandererCanWander: this.wandererCanWander,
+      wandererCanCraft: this.wandererCanCraft,
+      wandererCanTrain: this.wandererCanTrain,
+      //Single-Person Mode (no sec disciples/companions)
+      isLoneWolf: this.isLoneWolf
     }
     localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(data))
     this.timeTillAutosave = this.autosaveInterval / 1000; //in MS so divide
@@ -146,9 +177,28 @@ export class GamedataService implements OnInit {
       let res = JSON.parse(ls, GamedataService.MapEncoder);
       this.resourceAmounts = JSON.parse(res["resourceAmounts"], GamedataService.MapDecoder);
       this.knownResources = JSON.parse(res["knownResources"], GamedataService.MapDecoder);
+      this.knowLocations = JSON.parse(res['knowLocations'], GamedataService.MapDecoder);
+      this.masterLocationList = JSON.parse(res['masterLocationList'], GamedataService.MapDecoder);
       this.lastGameTick = res["lastGameTick"];
       this.autosaveInterval = res["autosaveInterval"];
       this.currentTheme = res['currentTheme'];
+      this.timeTillAutosave = res['timeTillAutosave'];
+      this.ticksPerSecond = res['ticksPerSecond'];
+      this.progressBarUpdateInterval = res['progressBarUpdateInterval'];
+      this.currentTheme = res['currentTheme'];
+      this.canWander = res['canWander'];
+      this.canAdventure = res['canAdventure'];
+      this.canCultivate = res['canCultivate'];
+      this.canRanch = res['canRanch'];
+      this.canFarm = res['canFarm'];
+      this.canTend = res['canTend'];
+      this.canSmith = res['canSmith'];
+      this.canRefine = res['canRefine'];
+      this.showAcks = res['showAcks'];
+      this.wandererCanWander = res['wandererCanWander'];
+      this.wandererCanCraft = res['wandererCanCraft'];
+      this.wandererCanTrain = res['wandererCanTrain'];
+      this.isLoneWolf = res['isLoneWolf'];
       this.FixJSONMapsToDecimals();
       this.ResumeLoadedGameTimers();
       return true;
@@ -232,7 +282,7 @@ export class GamedataService implements OnInit {
   }
 
   public UpSertResourceValue(item: IBaseItem, value: Decimal): void {
-    if(this.IsBaseItemKnown(item)) {
+    if (this.IsBaseItemKnown(item)) {
       if (this.ItemElementIsKnown(item)) {
         let it = this.resourceAmounts.get(item.baseName).get(item.element);
         it = it.add(value);
@@ -263,21 +313,18 @@ export class GamedataService implements OnInit {
     this.currentItemId += 1;
     // add to know resources
     this.knownResources.set(item.displayName, item);
-    this.test.push(item);
     //Calculate required tick-values
     UtilityFunctions.CalcBarPercValues(item);
     //Toast that we unlocked a new item!
     const msg = 'Unlocked New Item: ' + item.displayName
     this.Toast(msg, 2500, 'success');
-    console.log(this.knownResources);
-    console.log(this.test);
   }
 
 
   public GenerateRandomElementFromLocationItem(location: IAdventureLocation, item: IBaseItem) {
     let haveElement = false;
-    //Irritating JS & ShallowCopies. THis one line cost me like 4 hours
-    let newItem:IBaseItem = Object.create(item);
+    //Irritating JS & ShallowCopies. This one line cost me like 4 hours
+    let newItem: IBaseItem = _.cloneDeep(item);
     //Loop until we get an element.
     const maxLoops = 1000;
     let currentLoop = 0;
@@ -321,6 +368,110 @@ export class GamedataService implements OnInit {
       return false
     }
     return true;
+  }
+
+  //TODO: make this less terrible
+  public GetAllKnownResourcesOfType(item: IBaseItem): Array<IBaseItem> {
+    let knownItems: Array<IBaseItem> = new Array<IBaseItem>()
+    // for base item, poke value
+    let bvals = this.resourceAmounts.get(item.baseName);
+    let elems = bvals.keys();
+    // for every element we have a value for
+    for (let e of elems) {
+      if (e == Element.NULL)
+        continue;
+      /**
+       *   try and grab the object from 'Known Resources
+       *   via a dirty deep-clone-apply-element-regen-name hack
+       */
+      let i = _.cloneDeep(item);
+      i.element = e;
+      i.RegenerateDisplayName();
+      if (this.knownResources.has(i.displayName)) {
+        knownItems.push(i);
+      }
+    }
+    return knownItems;
+  }
+
+  //endregion
+
+  //region locationManagement
+
+  //TODO: Possibly move to Save/Load?
+  // Containts the master list of all locations in the game, for runtime lookups and diffs.
+  // Does not replace the sub-loc static mapping.
+  private SetupMasterListOfLocations() {
+    //Bamboo Forest
+    const bbfd = new BambooForestDepths();
+    const bbf = new BambooForest();
+    const bbfg = new BambooForestGrove();
+    const bbff = new BambooForestFringe();
+    this.masterLocationList.set(bbfd.name, bbfd);
+    this.masterLocationList.set(bbf.name, bbf);
+    this.masterLocationList.set(bbfg.name, bbfg);
+    this.masterLocationList.set(bbff.name, bbff);
+    //Next Location....
+  }
+
+  public DiscoverLocation(location: IAdventureLocation) {
+    if (!this.knownResources.has(location.name)) {
+      this.knowLocations.set(location.name, location);
+      let msg = "Unlocked new location: " + location.name;
+      this.Toast(msg, 2500, 'primary');
+    }
+  }
+
+
+  public FoundAllSubLocations(location: IAdventureLocation): boolean {
+    if (!location.hasSubLocations)
+      return true; //no sub locs, therefound them all
+    let have: boolean = true; // assume we have found them all
+    if (LocationMaps.subLocations.has(location.name)) {
+      for (let [slkey, slval] of LocationMaps.subLocations.get(location.name)) {
+        have = this.knowLocations.has(slval);
+        if (!have)
+          return false;
+      }
+    }
+    return false;
+  }
+
+  public FindRandomSubLocation(baseLocation: IAdventureLocation) {
+    if (baseLocation.hasSubLocations) {
+      //TODO: Make this a player-stats based chance-roll, instead of instant-gratification of 'Found one!'
+      for (let [key, val] of LocationMaps.subLocations) {
+        for (let sl of val) {
+          //If we dont know this sub-location..
+          if (!this.knowLocations.has(sl)) {
+            //grab it, and discover it
+            this.DiscoverLocation(this.masterLocationList.get(sl));
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  public GetKnowLocationsFromBase(baseLocation: IAdventureLocation): Array<IAdventureLocation> {
+
+    let kl = new Array<IAdventureLocation>();
+    if(baseLocation.hasSubLocations) {
+      const sl = LocationMaps.subLocations.get(baseLocation.name);
+      //Sub-locations
+      for (let sln of sl) {
+        if (this.knowLocations.has(sln)) {
+          kl.push(this.knowLocations.get(sln))
+        }
+      }
+    } else {
+      //Check for the base locations, and make sure we return that as well
+      //THis should never fail.
+      if(!this.knowLocations.has(baseLocation.name))
+        throw new Error("Attempting to serach for sub-locations without discogering the Top-Level Location!");
+      kl.push(baseLocation);
+    }
+    return kl;
   }
 
   //endregion

@@ -6,7 +6,7 @@
       </ion-button>
     </ion-menu-toggle>
   </ion-buttons>
-  <ion-button slot="end" (click)="showThemeSelect()">
+  <ion-button slot="end" fill="outline" (click)="showThemeSelect()">
     <ion-icon name="contrast"></ion-icon>
   </ion-button>
   <ion-item slot="end">Autosave In: {{this.gds.TimeTilAutosave()}}</ion-item>
@@ -18,6 +18,8 @@
     <ion-content>
       <ion-list>
         <ion-item *ngIf="true" routerLink="overview">Overview</ion-item>
+        <ion-item>Resources</ion-item>
+        <ion-item>Locations</ion-item>
         <ion-item *ngIf="gds.canWander" routerLink="wanderer">Wander</ion-item>
         <ion-item *ngIf="gds.canAdventure">Adventure</ion-item>
         <ion-item *ngIf="gds.canCultivate">Cultivation</ion-item>

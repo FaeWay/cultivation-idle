@@ -4,10 +4,7 @@ import {WeakSpiritHerb} from "../../../models/items/herbs/weakspiritherb";
 import {Element} from "../../../models/items/elements";
 import {IAdventureLocation} from "../../../models/locations/location.model";
 import {
-  BambooForest,
-  BambooForestDepths,
-  BambooForestFringe,
-  BambooForestGrove
+  BambooForest
 } from "../../../models/locations/bamboo-forest/bamboo-forest.location.model";
 
 
@@ -22,20 +19,18 @@ export class WandererOverviewComponent implements OnInit {
   private gds: GamedataService;
   //Items found in wandering
   spiritHerb: WeakSpiritHerb;
-  //Locations found when wandering
-  locations: Array<IAdventureLocation> = new Array<IAdventureLocation>();
+  //base location found when wandering
+  baseLocation: IAdventureLocation;
 
   constructor(private gameData: GamedataService) {
     this.activeSegment = 'wanderer-overview';
     this.gds = gameData;
-    this.locations.push(new BambooForest());
-    this.locations.push(new BambooForestFringe());
-    this.locations.push(new BambooForestGrove());
-    this.locations.push(new BambooForestDepths());
+    this.baseLocation = new BambooForest();
     this.spiritHerb = new WeakSpiritHerb(Element.NULL);
   }
 
   ngOnInit() {
+    this.baseLocation = new BambooForest();
   }
 
   segmentChanged(ev: any) {

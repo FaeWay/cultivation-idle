@@ -1,6 +1,7 @@
 import {IBaseItem} from "../baseItem.model";
 import {Element, ElementMaps} from "../elements";
 import Decimal from "break_eternity.js";
+import {UtilityFunctions} from "../../../Utils/utlity-functions";
 
 export class LustrumHerb implements IBaseItem {
   id: number;
@@ -26,6 +27,7 @@ export class LustrumHerb implements IBaseItem {
     this.baseResourceAmount = new Decimal(1);
     this.loopTime = 1000;
     this.lastTick = 0;
+    UtilityFunctions.CalcBarPercValues(this);
   }
 
   RegenerateDisplayName() {

@@ -23,6 +23,9 @@ export class ItemProgressBar implements OnInit {
   @Input()
   actionDisplayOverride:string;
 
+  @Input()
+  displayItemsPerSec:boolean = false;
+
   private itemDisplay:string;
   constructor() { }
 

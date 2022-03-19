@@ -16,6 +16,12 @@ export interface IAdventureLocation {
 }
 
 
-export class LocationItemMaps {
-  itemsInLocation: Map<string, string>;
+export class LocationMaps {
+  public static itemsInLocation: Map<string, string> = new Map<string, string>();
+  ///Map of BaseLocation:Sub Location Strings
+  public static subLocations: Map<string, Array<string>> = new Map<string,Array<string>>([
+    [
+      'Bamboo Forest', new Array<string>('Bamboo Forest Grove', 'Bamboo Forest Fringe', 'Bamboo Forest Depths')
+    ]
+  ])
 }

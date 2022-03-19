@@ -35,6 +35,13 @@ export enum DaoPalaceStars {
 export class BodyTransformation {
   stage: BodyTransformationStage;
   gate: EightGates
-  start: DaoPalaceStars
+  stars: DaoPalaceStars
+
+  constructor() {
+    this.stage = 0;
+    this.stars = 0;
+    this.gate = 0;
+  }
+
 }
 

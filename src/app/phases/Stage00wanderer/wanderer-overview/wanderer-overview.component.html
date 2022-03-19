@@ -11,16 +11,20 @@
 <ion-content>
   <ng-container *ngIf="this.activeSegment.localeCompare('wanderer-overview') === 0">
     <ion-card>
-      <ion-card-header>
-        Possible Actions
-      </ion-card-header>
+      <ion-card-header>Fae-Way Proclaims</ion-card-header>
       <ion-card-content>
-        Overview Coming Soon...
+        This page will contain:
+        <ul>
+          <li>Locations Discovered</li>
+          <li>Number of baseLocation left to discover</li>
+          <li>Items that can be found in the known baseLocation</li>
+          <li>Future Useful Stats</li>
+        </ul>
       </ion-card-content>
     </ion-card>
   </ng-container>
   <cvi-wanderer-crafting *ngIf="this.activeSegment.localeCompare('crafting')===0"></cvi-wanderer-crafting>
-  <cvi-wanderer-wandering [locations]="this.locations" [spirtHerb]="this.spiritHerb"
+  <cvi-wanderer-wandering [baseLocation]="this.baseLocation" [weakSpiritHerb]="this.spiritHerb"
                           *ngIf="this.activeSegment.localeCompare('wander') === 0"></cvi-wanderer-wandering>
   <cvi-wanderer-training *ngIf="this.activeSegment.localeCompare('training')=== 0"></cvi-wanderer-training>
 </ion-content>

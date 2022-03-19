@@ -1,13 +1,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from "@ionic/angular";
-import {UnlockNewItemComponent} from "./unlock-new-item/unlock-new-item.component";
 import {ItemProgressBar} from "./item-progress-bar/item-progress-bar.component";
+import {ManuallyUnlockNewItemComponent} from "./manually-unlock-new-item/manually-unlock-new-item.component";
 
 @NgModule({
-  declarations: [ItemProgressBar, UnlockNewItemComponent],
+  declarations: [ItemProgressBar, ManuallyUnlockNewItemComponent],
   exports: [
-    ItemProgressBar, UnlockNewItemComponent
+    ItemProgressBar, ManuallyUnlockNewItemComponent
   ],
   imports: [
     CommonModule,
