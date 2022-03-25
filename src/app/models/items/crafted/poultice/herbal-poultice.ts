@@ -1,23 +1,24 @@
-import {IBaseItem} from "../baseItem.model";
-import {Element, ElementMaps} from "../elements";
+import {IBaseItem} from "../../baseItem.model";
+import {Element, ElementMaps} from "../../elements";
 import Decimal from "break_eternity.js";
-import {UtilityFunctions} from "../../../Utils/utlity-functions";
+import {UtilityFunctions} from "../../../../Utils/utlity-functions";
 
-export class WeakSpiritHerb implements IBaseItem {
-  id: number;
-  element: Element;
-  displayName: string
-  baseName: string
-  qi: Decimal;
+export class HerbalPoultice implements  IBaseItem {
+  barValue: number;
+  baseName: string;
   baseResourceAmount: Decimal;
+  displayName: string;
+  element: Element;
+  id: number;
   lastTick: number;
   loopTime: number;
   percentPerTick: number;
-  barValue: number;
+  qi: Decimal;
+
 
   constructor(element: Element, qi?: Decimal) {
     this.element = element;
-    this.baseName = "Weak Spirit Herb";
+    this.baseName = "Herbal Poultice";
     this.RegenerateDisplayName();
     if (qi) {
       this.qi = qi;
@@ -33,7 +34,8 @@ export class WeakSpiritHerb implements IBaseItem {
   }
 
   RegenerateDisplayName() {
-    this.displayName = "Weak " + ElementMaps.display.get(this.element) + " Herb";
+    this.displayName = ElementMaps.display.get(this.element) + " Element " + this.baseName;
   }
+
 
 }

@@ -1,13 +1,13 @@
-import {IBaseItem} from "../baseItem.model";
-import {Element, ElementMaps} from "../elements";
+import {IBaseItem} from "../../baseItem.model";
+import {Element, ElementMaps} from "../../elements";
 import Decimal from "break_eternity.js";
-import {UtilityFunctions} from "../../../Utils/utlity-functions";
+import {UtilityFunctions} from "../../../../Utils/utlity-functions";
 
 export class LustrumHerb implements IBaseItem {
   id: number;
   element: Element;
-  baseName: string
   displayName: string;
+  baseName: string
   qi: Decimal;
   baseResourceAmount: Decimal;
   lastTick: number;
@@ -17,7 +17,7 @@ export class LustrumHerb implements IBaseItem {
 
   constructor(element: Element, qi?: Decimal) {
     this.element = element;
-    this.baseName = "Century Herb";
+    this.baseName = "Decade Herb"
     this.RegenerateDisplayName();
     if (qi) {
       this.qi = qi;
@@ -31,6 +31,8 @@ export class LustrumHerb implements IBaseItem {
   }
 
   RegenerateDisplayName() {
-    this.displayName = ElementMaps.display.get(this.element) + "Century Herb";
+    this.displayName = ElementMaps.display.get(this.element) + "Decade Herb";
   }
+
+
 }

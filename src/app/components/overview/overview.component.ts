@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GamedataService} from "../../services/gamedata.service";
-import {WeakSpiritHerb} from "../../models/items/herbs/weakspiritherb";
+import {WeakSpiritHerb} from "../../models/items/gathered/herbs/weakspiritherb";
 import Decimal from "break_eternity.js";
 import {Element} from "../../models/items/elements";
 

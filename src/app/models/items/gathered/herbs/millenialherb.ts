@@ -1,11 +1,12 @@
-import {IBaseItem} from "../baseItem.model";
-import {Element, ElementMaps} from "../elements";
+import {IBaseItem} from "../../baseItem.model";
+import {Element, ElementMaps} from "../../elements";
 import Decimal from "break_eternity.js";
-import {UtilityFunctions} from "../../../Utils/utlity-functions";
+import {UtilityFunctions} from "../../../../Utils/utlity-functions";
 
-export class SpiritHerb implements IBaseItem {
+export class LustrumHerb implements IBaseItem {
   id: number;
   element: Element;
+  displayName: string;
   baseName: string
   qi: Decimal;
   baseResourceAmount: Decimal;
@@ -16,7 +17,7 @@ export class SpiritHerb implements IBaseItem {
 
   constructor(element:Element, qi?: Decimal) {
     this.element = element;
-    this.baseName = "Spirit Herb";
+    this.baseName = "Millennial Herb";
     this.RegenerateDisplayName();
     if(qi){
       this.qi = qi;
@@ -29,10 +30,9 @@ export class SpiritHerb implements IBaseItem {
     UtilityFunctions.CalcBarPercValues(this);
   }
 
-  displayName: string;
-
   RegenerateDisplayName() {
-    this.displayName = ElementMaps.display.get(this.element) + this.baseName;
+    this.displayName = ElementMaps.display.get(this.element) + "Millennial Herb";
   }
+
 
 }

@@ -1,7 +1,7 @@
-import {IBaseItem} from "../baseItem.model";
-import {Element, ElementMaps} from "../elements";
+import {IBaseItem} from "../../baseItem.model";
+import {Element, ElementMaps} from "../../elements";
 import Decimal from "break_eternity.js";
-import {UtilityFunctions} from "../../../Utils/utlity-functions";
+import {UtilityFunctions} from "../../../../Utils/utlity-functions";
 
 export class LustrumHerb implements IBaseItem {
   id: number;

@@ -9,16 +9,21 @@ import {CoreModule} from "../../components/core/core.module";
 import {FormsModule} from "@angular/forms";
 
 @NgModule({
-  declarations: [WandererOverviewComponent, WandererCraftingComponent, WandererWanderingComponent, WandererTrainingComponent],
+  declarations: [
+    WandererOverviewComponent,
+    WandererCraftingComponent,
+    WandererWanderingComponent,
+    WandererTrainingComponent
+  ],
   exports: [
     WandererOverviewComponent
   ],
-    imports: [
-        CommonModule,
-        IonicModule,
-        CoreModule,
-        FormsModule,
-    ]
+  imports: [
+    CommonModule,
+    IonicModule,
+    CoreModule,
+    FormsModule
+  ]
 })
 export class WandererModule {
 }

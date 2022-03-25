@@ -16,8 +16,9 @@
   </ion-card>
   <ion-card-header>Wandering in...</ion-card-header>
   <ion-card-content>
-    <ion-select [(ngModel)]="selectedLocationName" (ionChange)="this.updateSelectionLocation()"
-                [hidden]="hideLocationSelect" placeholder="Select Location" interface="popover">
+    <ion-select
+      [(ngModel)]="selectedLocationName" (ionChange)="this.updateSelectionLocation()"
+      placeholder="Select Location" interface="popover">
       <ion-select-option
         *ngFor="let loc of this.gds.GetKnowLocationsFromBase(this.baseLocation)">{{loc.name}}</ion-select-option>
     </ion-select>

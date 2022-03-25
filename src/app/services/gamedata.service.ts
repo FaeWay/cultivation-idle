@@ -13,11 +13,13 @@ import {
   BambooForestFringe,
   BambooForestGrove
 } from "../models/locations/bamboo-forest/bamboo-forest.location.model";
+import {WeakSpiritHerb} from "../models/items/gathered/herbs/weakspiritherb";
 
 
 const fmt = require('swarm-numberformat')
 const CULTIVATION_SUB_LEVELS_PER_STAGE = 9;
 const LOCAL_STORAGE_NAME = 'cultivation-idle-savegame';
+const UNLOCK_FEATURE_TOAST_DELAY = 7500;
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +56,7 @@ export class GamedataService implements OnInit {
   //Wander Specific flags
   public wandererCanWander: boolean = true;
   public wandererCanCraft: boolean = false;
-  public wandererCanTrain: boolean = false;
+  public wandererCanTrain: boolean = true;
 
   //Single-Person Mode (no sec disciples/companions)
   private isLoneWolf: boolean = true;
@@ -295,10 +297,10 @@ export class GamedataService implements OnInit {
         m.set(item.element, item.baseResourceAmount);
       }
     } else {
-      //Brand new item & element
-      this.MakeResourceKnown(item);
       // Resource values
       this.resourceAmounts.set(item.baseName, new Map<Element, Decimal>().set(item.element, item.baseResourceAmount));
+      //Brand new item & element
+      this.MakeResourceKnown(item);
     }
     //Tag 'tick' time
     item.lastTick = Date.now();
@@ -318,6 +320,8 @@ export class GamedataService implements OnInit {
     //Toast that we unlocked a new item!
     const msg = 'Unlocked New Item: ' + item.displayName
     this.Toast(msg, 2500, 'success');
+    //Update unlocks, as we unlocked something!
+    this.UpdateGameDataFlags();
   }
 
 
@@ -471,7 +475,7 @@ export class GamedataService implements OnInit {
   }
 
 
-  public GetAllKnownLocations():Array<IAdventureLocation> {
+  public GetAllKnownLocations(): Array<IAdventureLocation> {
     return Array.from(this.knowLocations.values()) as Array<IAdventureLocation>;
   }
 
@@ -527,16 +531,43 @@ export class GamedataService implements OnInit {
   //endregion
 
   //region userInteractions
-  public Toast(message: string, duration: number, color: string = "warning") {
+  public Toast(message: string, duration: number, color: string = "warning", position: any = 'bottom') {
     this.toaster.create({
       message: message,
       duration: duration,
       color: color,
-      position: 'bottom'
+      position: position
     }).then(t => t.present())
   }
 
   //endregion
 
 
+  //region UnlocksAndEnhancements
+
+  public async UpdateGameDataFlags() {
+    let message: string = "New Feature Unlocked";
+    //wait a while, as unlock messages are not immediate.
+    await new Promise(f => setTimeout(f, UNLOCK_FEATURE_TOAST_DELAY));
+    if (!this.wandererCanCraft) {
+      let sh = new WeakSpiritHerb(Element.metal); //doesnt matter, base type.
+      if (this.IsBaseItemKnown(sh)) {
+        this.wandererCanCraft = true;
+        this.Toast(message + ': Wanderer Crafting', 2500, "Secondary", 'top')
+      }
+    }
+  }
+
+  public CanActionBePerformed(requirements: Map<IBaseItem, Decimal>) {
+    let allItem = true; //assume we have everything to start with
+    for(let [key,value] of requirements){
+      let val = this.GetResourceValue(key);
+      allItem = val.cmp(value) != -1; //-1 is 'less than'
+      if(!allItem)
+        return false;
+    }
+    return true;
+  }
+
+  //endregion
 }

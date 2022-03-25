@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {GamedataService} from "../../../services/gamedata.service";
-import {WeakSpiritHerb} from "../../../models/items/herbs/weakspiritherb";
+import {WeakSpiritHerb} from "../../../models/items/gathered/herbs/weakspiritherb";
 import {Element} from "../../../models/items/elements";
 import {IAdventureLocation} from "../../../models/locations/location.model";
-import {
-  BambooForest
-} from "../../../models/locations/bamboo-forest/bamboo-forest.location.model";
+import {BambooForest} from "../../../models/locations/bamboo-forest/bamboo-forest.location.model";
 
 
 @Component({

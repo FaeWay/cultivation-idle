@@ -1,0 +1,41 @@
+<ion-card>
+  <ion-card-header>ACTION TO PERFORM</ion-card-header>
+  <ion-card>
+    <ion-card-header>REQS</ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-list>
+              <ion-list-header>Resources Needed</ion-list-header>
+              <ion-item *ngFor="let item of requiredItems | keyvalue">
+                {{item.key.displayName}} x {{item.value.valueOf()}}
+              </ion-item>
+            </ion-list>
+          </ion-col>
+          <ion-col>
+            <ion-list>
+              <ion-list-header>Currently Have</ion-list-header>
+              <ion-item *ngFor="let item of requiredItems | keyvalue"
+                        [color]="DetermineHighlightColor(item.key, item.value)">
+                {{item.key.displayName}} x {{FilterNaN(item.key)}}
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+    <ion-card>
+      <ion-card-header>Craft {{this.outputAmount}} of {{this.outputItem.displayName}}</ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>Takes: {{this.timeTaken / 1000 }} second(s)</ion-item>
+        </ion-list>
+        <ion-button [color]="this.CanCraft() ? 'success' : 'warning'" expand="block">
+          <ion-icon name="hammer" slot="start"></ion-icon>
+          Craft {{this.outputAmount.valueOf()}} {{this.outputItem.displayName}}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-card>
+</ion-card>
