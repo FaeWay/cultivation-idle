@@ -1,9 +1,10 @@
-<button class="full-width" style="width:100%;" (click)="startTimer()" [disabled]="AllNeededFields()">
+<button class="full-width" style="width:100%;" (click)="StartUnlockOrDiscovery()" [disabled]="this.isDisabled">
   <ion-card>
     <ion-card-content>
       <ion-label *ngIf="!this.isLocationUnlock">{{this.actionName}}</ion-label>
       <ion-label *ngIf="this.isLocationUnlock">Explore further in the {{this.baseLocation.name}}</ion-label>
-      <ion-progress-bar *ngIf="this.barVal > 0" [value]="this.barVal"></ion-progress-bar>
+      <ion-progress-bar *ngIf="GetBarValue() > 0"
+                        [value]="GetBarValue()"></ion-progress-bar>
     </ion-card-content>
   </ion-card>
 </button>

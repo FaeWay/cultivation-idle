@@ -3,6 +3,7 @@ import {Element} from '../../items/elements';
 import {BodyTransformationStage} from "../../progression/bodyTransformation";
 import {CultivationRealms} from "../../progression/cultivationRealms";
 import {ISpecialFeature} from "../../features/ISpecialFeature";
+import {UtilityFunctions} from "../../../Utils/utlity-functions";
 
 export class BambooForest implements IAdventureLocation {
   name: string;
@@ -14,7 +15,8 @@ export class BambooForest implements IAdventureLocation {
   hasSpecialFeature: boolean;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
-  unlockTime: number;
+  actionTime: number;
+  percentPerTick:number;
 
   constructor() {
     this.name = 'Bamboo Forest';
@@ -32,8 +34,11 @@ export class BambooForest implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>(); //None here at the base level.
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
-    this.unlockTime = 1;
+    this.actionTime = 1;
+    UtilityFunctions.CalcBarPercValues(this);
   }
+
+  barValue: number;
 }
 
 export class BambooForestFringe implements IAdventureLocation {
@@ -46,7 +51,8 @@ export class BambooForestFringe implements IAdventureLocation {
   subLocations: Array<IAdventureLocation>;
   hasSpecialFeature: boolean;
   specialFeatures: Array<ISpecialFeature>;
-  unlockTime: number;
+  actionTime: number;
+  percentPerTick:number;
 
   constructor() {
     this.name = "Bamboo Forest Fringe";
@@ -59,8 +65,12 @@ export class BambooForestFringe implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
-    this.unlockTime = 25000;
+    this.actionTime = 25000;
+    this.barValue = 0;
+    UtilityFunctions.CalcBarPercValues(this);
   }
+
+  barValue: number;
 }
 
 export class BambooForestGrove implements IAdventureLocation {
@@ -73,7 +83,8 @@ export class BambooForestGrove implements IAdventureLocation {
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
-  unlockTime: number;
+  actionTime: number;
+  percentPerTick:number;
 
   constructor() {
     this.name = "Bamboo Forest Grove";
@@ -87,8 +98,12 @@ export class BambooForestGrove implements IAdventureLocation {
     this.requiredSpirit = 0;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
-    this.unlockTime = 55000;
+    this.actionTime = 55000;
+    this.barValue = 0;
+    UtilityFunctions.CalcBarPercValues(this);
   }
+
+  barValue: number;
 }
 
 export class BambooForestDepths implements IAdventureLocation {
@@ -101,7 +116,8 @@ export class BambooForestDepths implements IAdventureLocation {
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
   subLocations: Array<IAdventureLocation>;
-  unlockTime: number;
+  actionTime: number;
+  percentPerTick:number;
 
   constructor() {
     this.name = "Bamboo Forest Depths";
@@ -114,6 +130,10 @@ export class BambooForestDepths implements IAdventureLocation {
     this.requiredSpirit = 1;
     this.specialFeatures = new Array<ISpecialFeature>();
     this.hasSpecialFeature = this.specialFeatures.length >= 1;
-    this.unlockTime = 100000;
+    this.actionTime = 100000;
+    this.barValue = 0;
+    UtilityFunctions.CalcBarPercValues(this);
   }
+
+  barValue: number;
 }

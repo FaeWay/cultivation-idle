@@ -17,10 +17,12 @@ import {NotfoundComponent} from "./components/misc/not-found/notfound.component"
 import {SettingsComponent} from "./components/settings/settings.component";
 import {ResourceOverviewComponent} from "./components/resource-overview/resource-overview.component";
 import {LocationsOverviewComponent} from "./components/locations-overview/locations-overview.component";
+import {AudioService} from "./services/audio.service";
 
 
 @NgModule({
-  declarations: [AppComponent,
+  declarations: [
+    AppComponent,
     BuiltWithComponent,
     NotfoundComponent,
     SettingsComponent,
@@ -47,7 +49,8 @@ import {LocationsOverviewComponent} from "./components/locations-overview/locati
     {
       provide: ErrorHandler,
       useClass: ErrorHandlerService
-    }],
+    }, AudioService
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

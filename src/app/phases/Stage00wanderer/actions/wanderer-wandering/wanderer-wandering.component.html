@@ -2,8 +2,7 @@
   <ion-card-header>Explore for new Areas in the {{this.baseLocation.name}}.</ion-card-header>
   <cvi-unlock-new-item *ngIf="!gds.FoundAllSubLocations(this.baseLocation)"
                        [item]="this.weakSpiritHerb"
-                       [isLocationUnlock]="true"
-                       [generateRandomItemFromBase]="false"
+                       [isRandomItemFromBase]="false"
                        [baseLocation]="this.baseLocation"
   ></cvi-unlock-new-item>
   <ion-card color="medium" *ngIf="gds.FoundAllSubLocations(this.baseLocation)">
@@ -25,7 +24,7 @@
     <cvi-unlock-new-item
       *ngIf="this.showSearchForHerbs()"
       [item]="this.weakSpiritHerb"
-      [generateRandomItemFromBase]="true"
+      [isRandomItemFromBase]="true"
       [baseLocation]="this.selectedLocation"
       [actionName]="'Hunt For Herbs'"
     ></cvi-unlock-new-item>

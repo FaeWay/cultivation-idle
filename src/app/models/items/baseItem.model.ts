@@ -8,7 +8,7 @@ export interface IBaseItem {
   baseName: string;
   displayName: string;
   lastTick: number;
-  loopTime: number;
+  actionTime: number;
   baseResourceAmount: Decimal;
   percentPerTick: number;
   barValue: number;

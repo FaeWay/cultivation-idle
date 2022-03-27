@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {GamedataService} from "./services/gamedata.service";
 import {ThemeService} from "./services/theme.service";
 import {IonSelect} from "@ionic/angular";
+import {AudioService} from "./services/audio.service";
 
 
 @Component({
@@ -23,11 +24,11 @@ export class AppComponent implements OnInit {
   ];
   public  selectTheme: string;
   hideList =true;
-  constructor(private gameData: GamedataService, private theme: ThemeService) {
+  constructor(private gameData: GamedataService, private theme: ThemeService, public audio:AudioService) {
     this.gds = gameData;
     this.selectTheme = this.gds.currentTheme;
-    this.dynamicTheme()
-
+    this.dynamicTheme();
+    this.audio.playpause();
   }
 
   ngOnInit() {

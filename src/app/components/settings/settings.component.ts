@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GamedataService} from "../../services/gamedata.service";
 
 @Component({
@@ -8,12 +8,11 @@ import {GamedataService} from "../../services/gamedata.service";
 })
 export class SettingsComponent implements OnInit {
 
-  private gds: GamedataService;
-  constructor(private data:GamedataService) {
-    this.gds = data;
+  constructor(public gds: GamedataService) {
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   async deleteGame() {
     await this.gds.DeleteGame();

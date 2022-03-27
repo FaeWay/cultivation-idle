@@ -81,6 +81,6 @@ export class WandererWanderingComponent implements OnInit {
 
   startGathering() {
     this.gds.StopTimerForItem(this.selectedHerb);
-    this.gds.StartRestartTimer(this.selectedHerb);
+    this.gds.StartRestartResourceTimer(this.selectedHerb);
   }
 }

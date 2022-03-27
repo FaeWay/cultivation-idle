@@ -4,6 +4,7 @@ import {CultivationRealms} from "../progression/cultivationRealms";
 import {ISpecialFeature} from "../features/ISpecialFeature";
 
 export interface IAdventureLocation {
+
   elementalPresence: Map<Element, number>; // Element Chance %
   name:string
   isTopLevelLocation: boolean;
@@ -13,7 +14,9 @@ export interface IAdventureLocation {
   requiredBody: BodyTransformationStage;
   requiredSpirit: CultivationRealms;
   specialFeatures: Array<ISpecialFeature>;
-  unlockTime: number;
+  actionTime: number;
+  percentPerTick: number;
+  barValue: number;
 }
 
 

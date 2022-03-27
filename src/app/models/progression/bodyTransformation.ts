@@ -43,5 +43,18 @@ export class BodyTransformation {
     this.gate = 0;
   }
 
+  /**
+   *
+   * Equations
+   * Body-Tempering:
+   *  BodyTransformation Stage
+   *    y = s^4l^2 + previousStageExpReqs
+   *    Where :
+   *      y = exp total
+   *      s = sub-level of staage
+   *      l = current stage
+   *
+    */
+
 }
 

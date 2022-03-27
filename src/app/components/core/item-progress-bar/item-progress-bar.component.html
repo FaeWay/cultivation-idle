@@ -1,7 +1,7 @@
 <ion-card>
   <ion-card-header>{{this.item.displayName}}
     <span *ngIf="displayItemsPerSec">
-    ({{ this.item.baseResourceAmount.div((this.item.loopTime / 1000)) }}/ sec)
+    ({{ this.item.baseResourceAmount.div((this.item.actionTime / 1000)) }}/ sec)
     </span> : {{this.totalHeld}}
   </ion-card-header>
   <ion-card-content>

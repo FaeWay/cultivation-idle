@@ -1,7 +1,37 @@
-<ion-grid>
-  <ion-row>
-    <ion-col>
-      <ion-button color="danger" (click)="deleteGame()">DELETE GAME</ion-button>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+<ion-content>
+  <ion-card>
+    <ion-accordion-group>
+      <ion-accordion>
+        <ion-item slot="header">
+          <ion-label>Notification / Toast Settings</ion-label>
+        </ion-item>
+
+        <ion-list slot="content">
+          <ion-item>
+            <ion-label>Toast Display Delay (ms):</ion-label>
+            <ion-input type="number"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Toast Display Time (ms):</ion-label>
+            <ion-input type="number" [value]="gds.toastTime"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-card>
+  <ion-card>
+    <ion-accordion-group>
+      <ion-accordion>
+        <ion-item slot="header">
+          <ion-label color="danger">Danger Zone</ion-label>
+        </ion-item>
+        <ion-list slot="content">
+          <ion-item>
+            <ion-label>Delete Local Save</ion-label>
+            <ion-button expand="block" fill="solid" color="danger" (click)="deleteGame()">DELETE GAME</ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-card>
+</ion-content>

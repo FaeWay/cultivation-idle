@@ -28,19 +28,27 @@ export class GamedataService implements OnInit {
 
   //region Vars
   //Game Data Maps
-  /// BaseName
+  /// BaseName is the key
   private resourceAmounts: Map<string, Map<Element, Decimal>>;
-  /// Display-Name
+  /// Display-Name is th ekey
   private knownResources: Map<string, object>;
-  private timers: Map<string, any>;
+
+  //TODO: Check that we dont need to shift this one to 'display name' as the key
+  private resourceTimers: Map<string, any>;
+  private adventureTimers: Map<string, any>;
+  private randomGeneratorTimers: Map<string, any>;
   private knowLocations: Map<string, IAdventureLocation>;
   private masterLocationList: Map<string, IAdventureLocation>;
 
+  // Game Engine Vars
   private lastGameTick: number;
   private autosaveInterval: number = 15000;
   private timeTillAutosave: number = 15;
   private ticksPerSecond: Decimal = new Decimal(1);
   private progressBarUpdateInterval: number = 100;
+  public unlockToastDelay: number = 7500;
+  public toastTime: number = 2500;
+  public playMusic: boolean = false;
 
   //UI Flags
   public canWander: boolean = true;
@@ -58,6 +66,11 @@ export class GamedataService implements OnInit {
   public wandererCanCraft: boolean = false;
   public wandererCanTrain: boolean = true;
 
+  // If we are Exploring somewhere to unlock a sub-location, what is it?
+  // Null if not set, or we have found all locations
+  private randomUnlockMap: Map<string, Map<string, IAdventureLocation>> = new Map<string, Map<string, IAdventureLocation>>();
+  //For random generating items: the base name -> Generated Item Name
+  private randomItemGeneratorMap: Map<string, Map<string, IBaseItem>> = new Map<string, Map<string, IBaseItem>>();
   //Single-Person Mode (no sec disciples/companions)
   private isLoneWolf: boolean = true;
   private loneAction: NodeJS.Timeout;
@@ -81,7 +94,10 @@ export class GamedataService implements OnInit {
     this.knownResources = new Map<string, IBaseItem>();
     this.knowLocations = new Map<string, IAdventureLocation>();
     this.masterLocationList = new Map<string, IAdventureLocation>();
-    this.timers = new Map<string, any>();
+    this.randomUnlockMap = new Map<string, Map<string, IAdventureLocation>>()
+    this.randomGeneratorTimers = new Map<string, any>();
+    this.resourceTimers = new Map<string, any>();
+    this.adventureTimers = new Map<string, any>();
     this.SetupMasterListOfLocations();
     if (!this.LoadGame()) {
       this.InitNewGame();
@@ -102,7 +118,8 @@ export class GamedataService implements OnInit {
   private InitNewGame(): void {
     this.resourceAmounts = new Map<string, Map<Element, Decimal>>();
     this.knownResources = new Map<string, IBaseItem>();
-    this.timers = new Map<string, any>();
+    this.resourceTimers = new Map<string, any>();
+    this.adventureTimers = new Map<string, any>();
     const saveGameLoop = setInterval(() => {
       this.SaveGame()
     }, this.autosaveInterval);
@@ -115,6 +132,7 @@ export class GamedataService implements OnInit {
   }
 
   private ResumeLoadedGameTimers() {
+    //TODO: Stop this going into the negeative for the first time when loading a save
     const saveGameLoop = setInterval(() => {
       this.SaveGame()
     }, this.autosaveInterval);
@@ -162,6 +180,10 @@ export class GamedataService implements OnInit {
       canSmith: this.canSmith,
       canRefine: this.canRefine,
       showAcks: this.showAcks,
+      //General Settings
+      unlockToastDelay: this.unlockToastDelay,
+      toastTime: this.toastTime,
+      playMusic: this.playMusic,
       //Wander Specific flags
       wandererCanWander: this.wandererCanWander,
       wandererCanCraft: this.wandererCanCraft,
@@ -201,11 +223,14 @@ export class GamedataService implements OnInit {
       this.wandererCanCraft = res['wandererCanCraft'];
       this.wandererCanTrain = res['wandererCanTrain'];
       this.isLoneWolf = res['isLoneWolf'];
+      this.unlockToastDelay = res['unlockToastDelay'];
+      this.toastTime = res['toastTime'];
+      this.playMusic = res['playMusic'];
       this.FixJSONMapsToDecimals();
       this.ResumeLoadedGameTimers();
       return true;
     } catch (e) {
-      console.error("Failed to load Game: " + e);
+      console.warn("Failed to load Game: " + e.message);
       return false;
     }
   }
@@ -226,7 +251,9 @@ export class GamedataService implements OnInit {
           cssClass: "danger",
           handler: () => {
             localStorage.removeItem(LOCAL_STORAGE_NAME);
-            this.router.navigate(['/']);
+            this.router.navigate(['/']).then(() => {
+              window.location.reload();
+            });
           }
         }
       ]
@@ -319,13 +346,13 @@ export class GamedataService implements OnInit {
     UtilityFunctions.CalcBarPercValues(item);
     //Toast that we unlocked a new item!
     const msg = 'Unlocked New Item: ' + item.displayName
-    this.Toast(msg, 2500, 'success');
+    this.Toast(msg, this.toastTime, 'success');
     //Update unlocks, as we unlocked something!
     this.UpdateGameDataFlags();
   }
 
 
-  public GenerateRandomElementFromLocationItem(location: IAdventureLocation, item: IBaseItem) {
+  private GenerateRandomElementFromLocationItem(location: IAdventureLocation, item: IBaseItem): IBaseItem {
     let haveElement = false;
     //Irritating JS & ShallowCopies. This one line cost me like 4 hours
     let newItem: IBaseItem = _.cloneDeep(item);
@@ -344,7 +371,7 @@ export class GamedataService implements OnInit {
       currentLoop += 1;
     }
     newItem.RegenerateDisplayName();
-    this.UpSertResourceValue(newItem, newItem.baseResourceAmount);
+    return newItem;
   }
 
   public HaveDiscoveredAllElementVariants(item: IBaseItem) {
@@ -422,7 +449,7 @@ export class GamedataService implements OnInit {
     if (!this.knownResources.has(location.name)) {
       this.knowLocations.set(location.name, location);
       let msg = "Unlocked new location: " + location.name;
-      this.Toast(msg, 2500, 'primary');
+      this.Toast(msg, this.toastTime, 'primary');
     }
   }
 
@@ -469,7 +496,7 @@ export class GamedataService implements OnInit {
     //Check for the base locations, and make sure we return that as well
     //THis should never fail.
     if (!this.knowLocations.has(baseLocation.name))
-      throw new Error("Attempting to serach for sub-locations without discogering the Top-Level Location!");
+      throw new Error("Attempting to search for sub-locations without discovering the Top-Level Location!");
     kl.push(baseLocation);
     return kl;
   }
@@ -479,10 +506,74 @@ export class GamedataService implements OnInit {
     return Array.from(this.knowLocations.values()) as Array<IAdventureLocation>;
   }
 
+  //Adventuring is a little different to resources. I could generic it all, but that's annoying to do in JS
+  public StartRestartAdventureTimer(location: IAdventureLocation) {
+    if (this.isLoneWolf) {
+      clearInterval(this.loneAction);
+      this.loneAction = setInterval(() => {
+        this.UpdateAndDiscoverLocation(location)
+      }, this.progressBarUpdateInterval)
+
+    } else {
+      let aTimer = setInterval(() => {
+        this.UpdateAndDiscoverLocation(location)
+      }, this.progressBarUpdateInterval)
+      this.adventureTimers.set(location.name, aTimer);
+    }
+  }
+
+  public UpdateAndDiscoverLocation(location: IAdventureLocation) {
+    if (location.barValue < 1) {
+      location.barValue += location.percentPerTick;
+    } else {
+      if (this.isLoneWolf) {
+        clearInterval(this.loneAction);
+      } else {
+        //STOP Timer
+        clearInterval(this.adventureTimers.get(location.name))
+      }
+      location.barValue = 0;
+      this.DiscoverLocation(location);
+    }
+  }
+
+  public SetNewRandomSubLocationToFind(location: IAdventureLocation) {
+    if (!this.FoundAllSubLocations(location)) {
+      if (!this.randomUnlockMap.has(location.name)) {
+        let newLoc = this.FindRandomSubLocation(location);
+        if (newLoc) {
+          //this wipes any old entries one purpose
+          this.randomUnlockMap.set(location.name, new Map<string, IAdventureLocation>());
+          this.randomUnlockMap.get(location.name).set(newLoc.name, newLoc);
+        }
+      }
+    }
+  }
+
+  public SetNewTopLevelLocationToFind() {
+    throw new Error("SetNewTopLevelLocationToFind() is not implemented yet");
+  }
+
+  public GetCurrentRandomSubLocationUnlock(baseLocation: IAdventureLocation): IAdventureLocation {
+    if (this.randomUnlockMap.has(baseLocation.name)) {
+      let map = this.randomUnlockMap.get(baseLocation.name);
+      //RIP any code conventions here. It works just fine. Fragile, but works.
+      return Array.from(map.values())[0] as IAdventureLocation;
+    }
+    return null;
+  }
+
+  public GetCurrentRandomItemUnlockByLocation(baseLocation: IAdventureLocation): IBaseItem {
+    if (this.randomItemGeneratorMap.has(baseLocation.name)) {
+      let mpa = this.randomItemGeneratorMap.get(baseLocation.name);
+      return Array.from(mpa.values())[0] as IBaseItem;
+    }
+  }
+
   //endregion
 
   //region timers
-  public StartRestartTimer(item: IBaseItem) {
+  public StartRestartResourceTimer(item: IBaseItem) {
     if (this.isLoneWolf) {
       clearInterval(this.loneAction);
       this.loneAction = setInterval(() => {
@@ -490,19 +581,43 @@ export class GamedataService implements OnInit {
       }, this.progressBarUpdateInterval)
     } else {
       //TODO: Limit to X People Per Y Thing
-      if (!this.timers.has(item.baseName)) {
+      if (!this.resourceTimers.has(item.baseName)) {
         let nTimer = setInterval(() => {
           this.UpdateProgressAndAddItems(item)
         }, this.progressBarUpdateInterval);
-        this.timers.set(item.baseName, nTimer);
+        this.resourceTimers.set(item.baseName, nTimer);
       } else {
         // Grab timer ID & stop timer
-        clearInterval(this.timers.get(item.baseName));
+        clearInterval(this.resourceTimers.get(item.baseName));
         let id = setInterval(() => {
           this.UpdateProgressAndAddItems(item)
         }, this.progressBarUpdateInterval);
-        this.timers.set(item.baseName, id);
+        this.resourceTimers.set(item.baseName, id);
       }
+    }
+  }
+
+  public StartRestartRandomResourceTimer(item: IBaseItem, location: IAdventureLocation) {
+    let newItem = this.GenerateRandomElementFromLocationItem(location, item);
+    let entry = new Map<string, IBaseItem>();
+    entry.set(newItem.displayName, newItem);
+    this.randomItemGeneratorMap.set(location.name, new Map<string, IBaseItem>());
+    this.randomItemGeneratorMap.set(location.name, entry);
+    //Every time we hit this, yeet the current random item for that location into the ether... after stopping any old timers
+    if (this.randomItemGeneratorMap.has(location.name)) {
+      clearInterval(this.randomGeneratorTimers.get(location.name));
+    }
+    if (this.isLoneWolf) {
+      clearInterval(this.loneAction);
+      this.loneAction = setInterval(() => {
+        this.UpdateProgressAndAddRandomizedItem(location);
+      }, this.progressBarUpdateInterval)
+    } else {
+      //Kick off the timer
+      let t = setInterval(() => {
+        this.UpdateProgressAndAddRandomizedItem(location);
+      }, this.progressBarUpdateInterval)
+      this.randomGeneratorTimers.set(location.name, t);
     }
   }
 
@@ -510,8 +625,8 @@ export class GamedataService implements OnInit {
     if (this.isLoneWolf) {
       clearInterval(this.loneAction);
     } else {
-      if (this.timers.has(item.baseName)) {
-        clearInterval(this.timers.get(item.baseName).value);
+      if (this.resourceTimers.has(item.baseName)) {
+        clearInterval(this.resourceTimers.get(item.baseName).value);
       }
     }
   }
@@ -521,10 +636,26 @@ export class GamedataService implements OnInit {
       item.barValue += item.percentPerTick;
     } else {
       //STOP Timer
-      clearInterval(this.timers.get(item.baseName));
+      clearInterval(this.resourceTimers.get(item.baseName));
       item.barValue = 0;
       this.UpSertResourceValue(item, item.baseResourceAmount);
-      this.StartRestartTimer(item);
+      this.StartRestartResourceTimer(item);
+    }
+  }
+
+  private UpdateProgressAndAddRandomizedItem(loc: IAdventureLocation) {
+    let item = this.GetCurrentRandomItemUnlockByLocation(loc);
+    if (item.barValue < 1) {
+      item.barValue += item.percentPerTick;
+    } else {
+      if (this.isLoneWolf) {
+        clearInterval(this.loneAction);
+      } else {
+        clearInterval(this.randomGeneratorTimers.get(loc.name))
+      }
+      this.UpSertResourceValue(item, new Decimal(1));
+      //Clear the item we just unlocked
+      this.randomItemGeneratorMap.delete(loc.name);
     }
   }
 
@@ -548,7 +679,7 @@ export class GamedataService implements OnInit {
   public async UpdateGameDataFlags() {
     let message: string = "New Feature Unlocked";
     //wait a while, as unlock messages are not immediate.
-    await new Promise(f => setTimeout(f, UNLOCK_FEATURE_TOAST_DELAY));
+    await new Promise(f => setTimeout(f, this.unlockToastDelay));
     if (!this.wandererCanCraft) {
       let sh = new WeakSpiritHerb(Element.metal); //doesnt matter, base type.
       if (this.IsBaseItemKnown(sh)) {
@@ -560,10 +691,10 @@ export class GamedataService implements OnInit {
 
   public CanActionBePerformed(requirements: Map<IBaseItem, Decimal>) {
     let allItem = true; //assume we have everything to start with
-    for(let [key,value] of requirements){
+    for (let [key, value] of requirements) {
       let val = this.GetResourceValue(key);
       allItem = val.cmp(value) != -1; //-1 is 'less than'
-      if(!allItem)
+      if (!allItem)
         return false;
     }
     return true;

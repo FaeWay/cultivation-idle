@@ -6,20 +6,19 @@
       </ion-button>
     </ion-menu-toggle>
   </ion-buttons>
-  <ion-button slot="end" fill="outline" (click)="showThemeSelect()">
-    <ion-icon name="contrast"></ion-icon>
-  </ion-button>
+
   <ion-item slot="end">Autosave In: {{this.gds.TimeTilAutosave()}}</ion-item>
   <ion-button slot="end" fill="outline" disabled="true">
     <ion-icon name="help"></ion-icon>
   </ion-button>
+
   <ion-title>Cultivation Idle</ion-title>
 </ion-toolbar>
 
 <ion-split-pane contentId="main" when="sm" class="top-margin">
   <ion-menu side="start" type="push" content-id="main">
     <ion-content>
-      <ion-list>
+      <ion-list inset="true">
         <ion-item *ngIf="true" routerLink="overview">Overview</ion-item>
         <ion-item routerLink="resources">Resources</ion-item>
         <ion-item routerLink="locations">Locations</ion-item>
@@ -32,7 +31,19 @@
         <ion-item *ngIf="gds.canSmith">Smithing</ion-item>
         <ion-item *ngIf="gds.canRefine">Refining</ion-item>
         <ion-item routerLink="settings">Settings</ion-item>
-        <ion-item routerLink="built-with">Acknowledgements</ion-item>
+        <ion-item routerLink="built-with">About</ion-item>
+        <ion-item-divider></ion-item-divider>
+        <ion-item>
+          <ion-button fill="outline" (click)="showThemeSelect()">
+            <ion-icon name="contrast"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="!audio.isPaused" slot="end" (click)="this.audio.playpause()">
+            <ion-icon name="musical-notes"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="audio.isPaused" slot="end" (click)="this.audio.playpause()">
+            <ion-icon name="volume-mute"></ion-icon>
+          </ion-button>
+        </ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>

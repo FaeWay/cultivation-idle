@@ -3,7 +3,7 @@ import {Element, ElementMaps} from "../../elements";
 import Decimal from "break_eternity.js";
 import {UtilityFunctions} from "../../../../Utils/utlity-functions";
 
-export class HerbalPoultice implements  IBaseItem {
+export class HerbalPoultice implements IBaseItem {
   barValue: number;
   baseName: string;
   baseResourceAmount: Decimal;
@@ -11,10 +11,9 @@ export class HerbalPoultice implements  IBaseItem {
   element: Element;
   id: number;
   lastTick: number;
-  loopTime: number;
+  actionTime: number;
   percentPerTick: number;
   qi: Decimal;
-
 
   constructor(element: Element, qi?: Decimal) {
     this.element = element;
@@ -28,7 +27,7 @@ export class HerbalPoultice implements  IBaseItem {
     this.element = element;
     this.RegenerateDisplayName();
     this.baseResourceAmount = new Decimal(1);
-    this.loopTime = 1000;
+    this.actionTime = 1000;
     this.lastTick = 0;
     UtilityFunctions.CalcBarPercValues(this);
   }
