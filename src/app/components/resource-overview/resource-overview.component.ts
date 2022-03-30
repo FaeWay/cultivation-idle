@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {GamedataService} from "../../services/gamedata.service";
+import {ElementMaps} from "../../models/items/elements";
+import {IBaseItem} from "../../models/items/baseItem.model";
 
 @Component({
   selector: 'cvi-resource-overview',
@@ -7,8 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ResourceOverviewComponent implements OnInit {
 
-  constructor() { }
 
-  ngOnInit() {}
+  constructor(public gds: GamedataService) {
+    //gds.GetAllKnownBaseItems();
+  }
 
+  ngOnInit() {
+  }
+
+  GetElement(item: IBaseItem) {
+    return ElementMaps.display.get(item.element);
+  }
 }

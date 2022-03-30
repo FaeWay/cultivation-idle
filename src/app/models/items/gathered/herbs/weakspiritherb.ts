@@ -27,7 +27,7 @@ export class WeakSpiritHerb implements IBaseItem {
     this.element = element;
     this.RegenerateDisplayName();
     this.baseResourceAmount = new Decimal(1);
-    this.actionTime = 1000;
+    this.actionTime = 2500;
     this.lastTick = 0;
     UtilityFunctions.CalcBarPercValues(this);
   }

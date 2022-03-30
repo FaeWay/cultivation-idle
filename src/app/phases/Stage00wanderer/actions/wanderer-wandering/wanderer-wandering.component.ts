@@ -18,15 +18,11 @@ export class WandererWanderingComponent implements OnInit {
   baseLocation: IAdventureLocation;
 
   //location select bindings
-  public selectedLocationName: string;
-  public selectedLocation: IAdventureLocation;
   public hideLocationSelect: false;
   private possibleLocations: Array<IAdventureLocation>;
 
   //herb select bidnings
-  public selectedHerbName: string;
   public possibleHerbs: Array<IBaseItem>;
-  public selectedHerb: IBaseItem;
 
   gds: GamedataService;
 
@@ -40,26 +36,17 @@ export class WandererWanderingComponent implements OnInit {
     this.possibleLocations = this.gds.GetKnowLocationsFromBase(this.baseLocation);
   }
 
-  updateSelectionLocation() {
-    for (let i = 0; i < this.possibleLocations.length; i++) {
-      let loc = this.possibleLocations[i];
-      if (loc.name.localeCompare(this.selectedLocationName) === 0) {
-        this.selectedLocation = loc;
-      }
-    }
-  }
-
   showSearchForHerbs(): boolean {
-    if (this.selectedLocation === undefined)
+    if (this.gds.wandererLocationToSearchForNewHerbs === undefined)
       return false;
-    if (this.gds.HaveDiscoveredAllElementVariantsInArea(this.selectedLocation, this.weakSpiritHerb)) {
+    if (this.gds.HaveDiscoveredAllElementVariantsInArea(this.gds.wandererLocationToSearchForNewHerbs, this.weakSpiritHerb)) {
       return false;
     }
     return true;
   }
 
   foundAllLocations(): boolean {
-    return this.gds.FoundAllSubLocations(this.selectedLocation);
+    return this.gds.FoundAllSubLocations(this.gds.wandererLocationToSearchForNewHerbs);
   }
 
   knowAboutHerbs(): boolean {
@@ -70,17 +57,8 @@ export class WandererWanderingComponent implements OnInit {
     return false;
   }
 
-  herbSelectionChanged() {
-    for (let i = 0; i < this.possibleHerbs.length; i++) {
-      let h = this.possibleHerbs[i];
-      if (h.displayName.localeCompare(this.selectedHerbName) === 0) {
-        this.selectedHerb = h;
-      }
-    }
-  }
-
   startGathering() {
-    this.gds.StopTimerForItem(this.selectedHerb);
-    this.gds.StartRestartResourceTimer(this.selectedHerb);
+    this.gds.StopTimerForItem(this.gds.wandererHerbCurrentlyBeingGathered);
+    this.gds.StartRestartResourceTimer(this.gds.wandererHerbCurrentlyBeingGathered);
   }
 }

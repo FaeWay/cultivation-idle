@@ -19,7 +19,6 @@ import {WeakSpiritHerb} from "../models/items/gathered/herbs/weakspiritherb";
 const fmt = require('swarm-numberformat')
 const CULTIVATION_SUB_LEVELS_PER_STAGE = 9;
 const LOCAL_STORAGE_NAME = 'cultivation-idle-savegame';
-const UNLOCK_FEATURE_TOAST_DELAY = 7500;
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +64,10 @@ export class GamedataService implements OnInit {
   public wandererCanWander: boolean = true;
   public wandererCanCraft: boolean = false;
   public wandererCanTrain: boolean = true;
+
+  //Wandere specific actions
+  public wandererLocationToSearchForNewHerbs: IAdventureLocation;
+  public wandererHerbCurrentlyBeingGathered: WeakSpiritHerb;
 
   // If we are Exploring somewhere to unlock a sub-location, what is it?
   // Null if not set, or we have found all locations
@@ -424,7 +427,6 @@ export class GamedataService implements OnInit {
     }
     return knownItems;
   }
-
   //endregion
 
   //region locationManagement

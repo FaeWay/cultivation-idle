@@ -10,22 +10,23 @@
   </ion-card>
 </ion-card>
 <ion-card>
-  <ion-card *ngIf="!selectedLocation" color="medium">
+  <ion-card *ngIf="!this.gds.wandererLocationToSearchForNewHerbs" color="medium">
     <ion-card-header>No location to wander in selected...</ion-card-header>
   </ion-card>
   <ion-card-header>Wandering in...</ion-card-header>
   <ion-card-content>
     <ion-select
-      [(ngModel)]="selectedLocationName" (ionChange)="this.updateSelectionLocation()"
+      [(ngModel)]="this.gds.wandererLocationToSearchForNewHerbs"
       placeholder="Select Location" interface="popover">
       <ion-select-option
-        *ngFor="let loc of this.gds.GetKnowLocationsFromBase(this.baseLocation)">{{loc.name}}</ion-select-option>
+        *ngFor="let loc of this.gds.GetKnowLocationsFromBase(this.baseLocation)"
+        [value]="loc">{{loc.name}}</ion-select-option>
     </ion-select>
     <cvi-unlock-new-item
       *ngIf="this.showSearchForHerbs()"
       [item]="this.weakSpiritHerb"
       [isRandomItemFromBase]="true"
-      [baseLocation]="this.selectedLocation"
+      [baseLocation]="this.gds.wandererLocationToSearchForNewHerbs"
       [actionName]="'Hunt For Herbs'"
     ></cvi-unlock-new-item>
     <ion-card *ngIf="!showSearchForHerbs() && this.gds.IsBaseItemKnown(this.weakSpiritHerb)" color="medium">
@@ -36,20 +37,22 @@
 
 <ion-card *ngIf="knowAboutHerbs()">
   <ion-card-header>Gather Herbs</ion-card-header>
-  <ion-select [(ngModel)]="selectedHerbName" (ionChange)="herbSelectionChanged()"
-              placeholder="Which herb?" interface="popover">
-    <ion-select-option *ngFor="let herb of this.possibleHerbs">{{herb.displayName}}</ion-select-option>
+  <ion-select [(ngModel)]="this.gds.wandererHerbCurrentlyBeingGathered"
+              placeholder="Which herb?" interface="popover" >
+    <ion-select-option
+      *ngFor="let herb of this.possibleHerbs" [value]="herb">{{herb.displayName}}
+    </ion-select-option>
 
   </ion-select>
-  <ion-button *ngIf="this.selectedHerb !== undefined"
+  <ion-button *ngIf="this.gds.wandererHerbCurrentlyBeingGathered !== undefined"
               fill="outline"
               expand="full"
               (click)="startGathering()"
   >
-    Gather {{this.selectedHerb.displayName}}</ion-button>
-  <cvi-item-progress-bar *ngIf="this.selectedHerb !== undefined"
-                         [item]="this.selectedHerb"
-                         [totalHeld]="this.gds.GetResourceValue(this.selectedHerb)"
+    Gather {{this.gds.wandererHerbCurrentlyBeingGathered.displayName}}</ion-button>
+  <cvi-item-progress-bar *ngIf="this.gds.wandererHerbCurrentlyBeingGathered !== undefined"
+                         [item]="this.gds.wandererHerbCurrentlyBeingGathered"
+                         [totalHeld]="this.gds.GetResourceValue(this.gds.wandererHerbCurrentlyBeingGathered)"
                          [action]="'Gathering...'"
                          [displayItemsPerSec]="false"
   ></cvi-item-progress-bar>
